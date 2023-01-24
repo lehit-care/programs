@@ -1,11 +1,13 @@
 package com.lehit.programs.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -28,9 +30,16 @@ public class Program implements Serializable {
 
     private String title;
 
+    private String avatarUrl;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
     private UUID author;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "program", orphanRemoval = true)
+    @OrderBy("position")
+    private List<Task> tasks;
 
 }

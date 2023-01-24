@@ -1,7 +1,6 @@
 package com.lehit.programs.service;
 
 import com.lehit.common.enums.ExecutionStatus;
-import com.lehit.programs.client.feign.MultimediaClient;
 import com.lehit.programs.kafka.producer.KafkaProducer;
 import com.lehit.programs.model.ExecutedItem;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
@@ -30,14 +29,14 @@ public class ActionItemsService {
     private final ActionItemRepository itemRepository;
     private final TaskRepository taskRepository;
     private final KafkaProducer kafkaProducer;
-    private final MultimediaClient multimediaClient;
+//    private final MultimediaClient multimediaClient;
 
     @Value("${spring.kafka.enabled}")
     private boolean kafkaEnabled;
 
     @Transactional
     public ExecutedItem executeItem(ExecutedItemRequest itemUserRelation, UUID userId, UUID itemId){
-        return executedItemRepository.save(new ExecutedItem(userId, itemId, itemUserRelation.taskExecutionId(), itemUserRelation.duration(), itemUserRelation.reply(), itemUserRelation.drawing(), itemUserRelation.language(), itemUserRelation.itemType()));
+        return executedItemRepository.save(new ExecutedItem(userId, itemId, itemUserRelation.taskExecutionId(), itemUserRelation.itemType()));
     }
 
 
@@ -57,8 +56,8 @@ public class ActionItemsService {
 
         itemRepository.delete(item);
 
-        if(informationItem != null && informationItem.getMediaFileUrl() != null && !informationItem.getMediaFileUrl().isBlank())
-            multimediaClient.deleteSingleMultimedia(item.getInformationItem().getMediaFileUrl());
+//        if(informationItem != null && informationItem.getMediaFileUrl() != null && !informationItem.getMediaFileUrl().isBlank())
+//            multimediaClient.deleteSingleMultimedia(item.getInformationItem().getMediaFileUrl());
     }
 
 
@@ -86,9 +85,5 @@ public class ActionItemsService {
         return sequenceList;
     }
 
-    @Transactional
-    public void removeUserData(UUID userId){
-        executedItemRepository.deleteByUserId(userId);
-    }
 
 }

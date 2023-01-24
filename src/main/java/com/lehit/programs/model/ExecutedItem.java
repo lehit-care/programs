@@ -1,7 +1,6 @@
 package com.lehit.programs.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lehit.common.enums.Language;
 import com.lehit.programs.model.audit.Auditable;
 import com.lehit.programs.model.enums.ActionItemType;
 import com.lehit.programs.model.pk.ExecutedItemCompositeKey;
@@ -12,12 +11,6 @@ import org.springframework.data.domain.Persistable;
 
 import java.util.UUID;
 
-@NamedEntityGraph(
-        name = "include-card",
-        attributeNodes = {
-                @NamedAttributeNode("card")
-        }
-)
 
 @Entity
 @Getter @Setter
@@ -35,7 +28,6 @@ public class ExecutedItem extends Auditable implements Persistable<ExecutedItemC
     @Schema(hidden = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", insertable = false, updatable = false)
-//   todo @RestResource(exported = false)
     @JsonIgnore
     private ActionItem actionItem;
 
@@ -56,21 +48,6 @@ public class ExecutedItem extends Auditable implements Persistable<ExecutedItemC
     @Id
     @ToString.Include
     private UUID taskExecutionId;
-
-    @Transient
-    private Integer duration;
-
-    @Transient
-    @Schema(hidden = true)
-    private byte points;
-
-    @Column(columnDefinition = "TEXT")
-    private String reply;
-
-    @Transient
-    private byte[] drawing;
-
-    private Language language;
 
     private ActionItemType itemType;
 
@@ -102,14 +79,10 @@ public class ExecutedItem extends Auditable implements Persistable<ExecutedItemC
     }
 
 
-    public ExecutedItem(UUID userId, UUID itemId, UUID taskExecutionId, Integer duration, String reply, byte[] drawing, Language language, ActionItemType actionItemType) {
+    public ExecutedItem(UUID userId, UUID itemId, UUID taskExecutionId, ActionItemType actionItemType) {
         this.userId = userId;
         this.itemId = itemId;
         this.taskExecutionId = taskExecutionId;
-        this.duration = duration;
-        this.reply = reply;
-        this.drawing = drawing;
-        this.language = language;
         this.itemType = actionItemType;
     }
 

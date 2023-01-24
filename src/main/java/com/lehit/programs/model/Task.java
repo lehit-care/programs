@@ -11,12 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 
-@NamedEntityGraph(
-        name = "including-cards",
-        attributeNodes = {
-                @NamedAttributeNode("cards")
-        }
-)
 
 @Entity
 @Getter @Setter
@@ -46,9 +40,6 @@ public class Task implements Serializable {
 
     @ToString.Include
     private int position;
-
-    @Embedded
-    private TaskSummary summary;
 
     @JsonIgnore
     @OneToMany(mappedBy = "task", orphanRemoval = true)

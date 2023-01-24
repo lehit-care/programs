@@ -1,0 +1,39 @@
+spring:
+#  cache.type: "none"
+#  autoconfigure:
+#    exclude:
+#      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+#      - org.redisson.spring.starter.RedissonAutoConfiguration
+  kafka:
+    enabled: false
+    topic:
+      name: dummy
+    profiles-topic.name: dummy
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: sa
+    driver-class-name=org: org.h2.Driver
+
+  h2.console.enabled: false
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  hibernate.ddl-auto: update
+
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+  liquibase:
+    enabled: false
+    contexts: test
+  test:
+    database:
+      replace: none
+
+
+logging.level:
+    com.lehit: DEBUG

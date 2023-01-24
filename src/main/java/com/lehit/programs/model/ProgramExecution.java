@@ -1,6 +1,5 @@
 package com.lehit.programs.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lehit.common.enums.ExecutionStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -12,21 +11,37 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@NamedEntityGraph(
+        name = "including-programs-tasks-executions",
+        attributeNodes = {
+                @NamedAttributeNode(value = "taskExecutions", subgraph = "executions-subgraph"),
+                @NamedAttributeNode(value = "program")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "executions-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("task")
+                        }
+                )
+        }
+)
+
+
 @Entity
 @Getter @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor @AllArgsConstructor
 @Builder @ToString
-public class TaskExecution {
-//    todo userId-TaskId - unique
-
-
+public class ProgramExecution {
+//    todo only 1 in-progress
     @Schema(hidden = true)
     @Id
     @Column(updatable= false)
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @EqualsAndHashCode.Include
+    @ToString.Include
     private UUID id;
 
     private UUID userId;
@@ -40,27 +55,16 @@ public class TaskExecution {
 
     private ExecutionStatus lifecycleStatus;
 
-    @ToString.Exclude
-    @OneToMany(mappedBy = "taskExecution", fetch = FetchType.LAZY, orphanRemoval = true)
-    @JsonIgnore
-    private List<ExecutedItem> executedItemUserRelations;
+    @OneToMany(mappedBy = "programExecution", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<TaskExecution> taskExecutions;
 
-    @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "program_execution", insertable = false, updatable = false)
-    @JsonIgnore
-    private ProgramExecution programExecution;
+    @JoinColumn(name = "program_id", insertable = false, updatable = false)
+    private Program program;
 
-    @Column(name = "program_execution")
+    @Column(name = "program_id")
     @EqualsAndHashCode.Include
-    private UUID programExecutionId;
+    @ToString.Include
+    private UUID programId;
 
-
-    @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id", insertable = false, updatable = false)
-    private Task task;
-
-    @Column(name = "task_id")
-    private UUID taskId;
 }

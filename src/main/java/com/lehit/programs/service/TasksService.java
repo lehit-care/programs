@@ -21,13 +21,20 @@ import java.util.stream.Collectors;
 public class TasksService {
     private final TaskRepository taskRepository;
     private final TaskExecutionRepository taskExecutionRepository;
-    private final MultimediaClient multimediaClient;
+//    private final MultimediaClient multimediaClient;
 
 
     public Optional<Task> getByProgramPosition(UUID program,  int position){
         return taskRepository.findByProgramIdAndPosition(program, position);
     }
 
+    List<Task> getByProgramId(UUID programId){
+        return taskRepository.findByProgramId(programId);
+    }
+
+    List<UUID> getIdsByProgramId(UUID programId){
+        return taskRepository.selectIdsByProgramId(programId);
+    }
 
     @Transactional
     public void removeUserData(UUID userId){
@@ -49,8 +56,8 @@ public class TasksService {
 
         taskRepository.delete(task);
 
-        if(!multimediaList.isEmpty())
-            multimediaClient.deleteMultimediaList(multimediaList);
+//        if(!multimediaList.isEmpty())
+//            multimediaClient.deleteMultimediaList(multimediaList);
 
         syncTasksPosition(task.getProgramId(), task.getPosition());
     }

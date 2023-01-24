@@ -1,9 +1,9 @@
 package com.lehit.programs.controller;
 
 import com.lehit.programs.model.ExecutedItem;
+import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.TaskExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
-import com.lehit.programs.model.payload.ProgramTasksProgress;
 import com.lehit.programs.service.ActionItemsService;
 import com.lehit.programs.service.ExecutionProgressService;
 import lombok.RequiredArgsConstructor;
@@ -17,30 +17,40 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-//todo base path
+@RequestMapping("/api/v1")
 public class UserController {
     private final ActionItemsService itemsService;
     private final ExecutionProgressService executionService;
 
 
+    @PostMapping("/executions/{clientId}/start-program/{programId}")
+    public ProgramExecution assignProgram(@PathVariable UUID clientId, @PathVariable UUID programId) {
+       return executionService.assignProgram(clientId, programId);
+    }
+
 // todo taskID
-    @PostMapping("/commands/client/{clientId}/start-task/{taskPosition}")
-    public TaskExecution startTask(@PathVariable UUID clientId, @PathVariable int taskPosition) {
-        return executionService.startTaskExecution(clientId, taskPosition);
+    @PostMapping("/executions/{clientId}/start-task/{taskId}")
+    public TaskExecution startTask(@PathVariable UUID clientId, @PathVariable UUID taskId) {
+        return executionService.startTaskExecution(clientId, taskId);
     }
 
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PostMapping("/commands/client/{clientId}/execute-item/{id}")
+    @PostMapping("/executions/{clientId}/execute-item/{id}")
     public void executeItem(@PathVariable UUID clientId, @PathVariable UUID id, @RequestBody ExecutedItemRequest executedItemRequest) {
         ExecutedItem executedItem = itemsService.executeItem(executedItemRequest, clientId, id);
         CompletableFuture.supplyAsync(() -> itemsService.emitEvent(executedItem));
     }
 
 
-    @PostMapping("/commands/client/{clientId}/finish-task/{taskExecutionId}")
-    public ProgramTasksProgress finishTask(@PathVariable UUID clientId, @PathVariable UUID taskExecutionId) {
+    @PostMapping("/executions/{clientId}/finish-task/{taskExecutionId}")
+    public TaskExecution finishTask(@PathVariable UUID clientId, @PathVariable UUID taskExecutionId) {
         return executionService.finishTaskExecution(clientId, taskExecutionId);
+    }
+
+    @GetMapping("/executions/{clientId}/current-program")
+    public ProgramExecution getCurrentProgramData(@PathVariable UUID clientId) {
+        return executionService.getActiveProgramExecutionData(clientId);
     }
 
 }
