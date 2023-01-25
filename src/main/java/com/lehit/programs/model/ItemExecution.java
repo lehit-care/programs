@@ -1,6 +1,7 @@
 package com.lehit.programs.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lehit.common.enums.ExecutionStatus;
 import com.lehit.programs.model.audit.Auditable;
 import com.lehit.programs.model.enums.ActionItemType;
 import com.lehit.programs.model.pk.ExecutedItemCompositeKey;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor @AllArgsConstructor
 @Builder @ToString(onlyExplicitlyIncluded = true)
 @IdClass(ExecutedItemCompositeKey.class)
-public class ExecutedItem extends Auditable implements Persistable<ExecutedItemCompositeKey> {
+public class ItemExecution extends Auditable implements Persistable<ExecutedItemCompositeKey> {
 
     @Schema(hidden = true)
     @ToString.Include
@@ -51,6 +52,8 @@ public class ExecutedItem extends Auditable implements Persistable<ExecutedItemC
 
     private ActionItemType itemType;
 
+    private ExecutionStatus lifecycleStatus;
+
 
     //    avoid select before insert operation
     @Schema(hidden = true)
@@ -79,7 +82,7 @@ public class ExecutedItem extends Auditable implements Persistable<ExecutedItemC
     }
 
 
-    public ExecutedItem(UUID userId, UUID itemId, UUID taskExecutionId, ActionItemType actionItemType) {
+    public ItemExecution(UUID userId, UUID itemId, UUID taskExecutionId, ActionItemType actionItemType) {
         this.userId = userId;
         this.itemId = itemId;
         this.taskExecutionId = taskExecutionId;

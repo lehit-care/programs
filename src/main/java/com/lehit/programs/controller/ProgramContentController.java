@@ -2,9 +2,10 @@ package com.lehit.programs.controller;
 
 import com.lehit.programs.model.Program;
 import com.lehit.programs.model.payload.ProgramSequence;
-import com.lehit.programs.repository.ProgramRepository;
 import com.lehit.programs.service.ActionItemsService;
+import com.lehit.programs.service.ProgramsService;
 import com.lehit.programs.service.TasksService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,24 +20,28 @@ import java.util.UUID;
 public class ProgramContentController {
     private final TasksService tasksService;
     private final ActionItemsService itemsService;
-    private final ProgramRepository programRepository;
+    private final ProgramsService programsService;
 
     //    Programs
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/programs/{author}/create")
-    public Program createProgram(@PathVariable UUID author, @RequestBody Program program) {
-        program.setAuthor(author);
-        return programRepository.save(program);
+    @PostMapping("/author/{authorId}/programs")
+    public Program createProgram(@PathVariable UUID authorId, @Valid @RequestBody Program program) {
+        program.setAuthor(authorId);
+        return programsService.saveProgram(program);
     }
 
-//    todo
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @DeleteMapping("/programs/{id}")
-//    public void deleteProgram(@PathVariable UUID id) {
-//        tasksService.deleteTask(id);
-//    }
+    @PatchMapping("/author/{authorId}/programs/{programId}")
+    public Program updateProgramBasicData(@PathVariable UUID authorId, @PathVariable UUID programId,  @RequestBody Program program) {
+        return programsService.updateProgramData(authorId, programId, program);
+    }
 
-//    todo Update Program
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/author/{authorId}/programs/{id}")
+    public void deleteProgram(@PathVariable UUID authorId, @PathVariable UUID id) {
+        programsService.deleteProgram(authorId, id);
+    }
+
+
 
 
     //    Tasks
@@ -59,7 +64,7 @@ public class ProgramContentController {
         return sequence;
     }
 
-    @PostMapping("/items/shuffle/{taskId}")
+    @PostMapping("/items/{taskId}/shuffle")
     public ProgramSequence shuffleItems(@PathVariable UUID taskId, @RequestBody ProgramSequence sequence) {
         itemsService.shuffleItems(taskId, sequence.sequences());
         return sequence;

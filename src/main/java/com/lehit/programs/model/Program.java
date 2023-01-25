@@ -1,7 +1,10 @@
 package com.lehit.programs.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lehit.programs.model.enums.ContentVisibilityStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -28,6 +31,7 @@ public class Program implements Serializable {
     @ToString.Include
     private UUID id;
 
+    @NotBlank(message = "Title is mandatory")
     private String title;
 
     private String avatarUrl;
@@ -35,11 +39,14 @@ public class Program implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @NotNull
     private UUID author;
 
     @JsonIgnore
     @OneToMany(mappedBy = "program", orphanRemoval = true)
     @OrderBy("position")
     private List<Task> tasks;
+
+    public ContentVisibilityStatus visibilityStatus;
 
 }

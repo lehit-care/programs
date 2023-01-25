@@ -2,15 +2,14 @@ package com.lehit.programs.service;
 
 import com.lehit.common.enums.ExecutionStatus;
 import com.lehit.programs.kafka.producer.KafkaProducer;
-import com.lehit.programs.model.ExecutedItem;
+import com.lehit.programs.model.ItemExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
 import com.lehit.programs.model.payload.ProgramSequence;
 import com.lehit.programs.repository.ActionItemRepository;
-import com.lehit.programs.repository.ExecutedItemRepository;
+import com.lehit.programs.repository.ItemExecutionRepository;
 import com.lehit.programs.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ActionItemsService {
-    private final ExecutedItemRepository executedItemRepository;
+    private final ItemExecutionRepository itemExecutionRepository;
     private final ActionItemRepository itemRepository;
     private final TaskRepository taskRepository;
     private final KafkaProducer kafkaProducer;
@@ -34,13 +33,24 @@ public class ActionItemsService {
     @Value("${spring.kafka.enabled}")
     private boolean kafkaEnabled;
 
+
+    List<UUID> getIdsByTaskId(UUID taskId){
+        return itemRepository.selectIdsByTaskId(taskId);
+    }
+
     @Transactional
-    public ExecutedItem executeItem(ExecutedItemRequest itemUserRelation, UUID userId, UUID itemId){
-        return executedItemRepository.save(new ExecutedItem(userId, itemId, itemUserRelation.taskExecutionId(), itemUserRelation.itemType()));
+    public ItemExecution executeItem(ExecutedItemRequest rel, UUID userId, UUID itemId){
+        var plannedExe = itemExecutionRepository.findByTaskExecutionIdAndItemId(rel.taskExecutionId(), itemId)
+                .orElseThrow();
+//        todo assert User
+
+        plannedExe.setLifecycleStatus(ExecutionStatus.FINISHED);
+        plannedExe.setItemType(rel.itemType());
+        return plannedExe;
     }
 
 
-    public ExecutedItem emitEvent(ExecutedItem executedItem){
+    public ItemExecution emitEvent(ItemExecution executedItem){
         if (kafkaEnabled){
             kafkaProducer.send(executedItem);
         }
@@ -69,14 +79,13 @@ public class ActionItemsService {
         item.setTaskId(null);
     }
 
+    //    todo LCS check or not if planned
     @Transactional
     public List<ProgramSequence.ExecutableEntitySequence> shuffleItems(UUID taskId, List<ProgramSequence.ExecutableEntitySequence> sequenceList){
         var task = taskRepository.findById(taskId).orElseThrow();
 
-        Asserts.check(!executedItemRepository.existsByTaskExecutionLifecycleStatusAndTaskExecutionTaskPosition(ExecutionStatus.STARTED, task.getPosition()),
-                "Current task is being executed by an User.");
 
-            Map<UUID, Integer> sequenceMap =  sequenceList.stream()
+        Map<UUID, Integer> sequenceMap =  sequenceList.stream()
                 .collect(Collectors.toMap(ProgramSequence.ExecutableEntitySequence::id, ProgramSequence.ExecutableEntitySequence::position));
 
         var items = itemRepository.findAllById(sequenceMap.keySet());

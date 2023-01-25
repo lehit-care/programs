@@ -1,6 +1,6 @@
 package com.lehit.programs.controller;
 
-import com.lehit.programs.model.ExecutedItem;
+import com.lehit.programs.model.ItemExecution;
 import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.TaskExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
@@ -28,7 +28,6 @@ public class UserController {
        return executionService.assignProgram(clientId, programId);
     }
 
-// todo taskID
     @PostMapping("/executions/{clientId}/start-task/{taskId}")
     public TaskExecution startTask(@PathVariable UUID clientId, @PathVariable UUID taskId) {
         return executionService.startTaskExecution(clientId, taskId);
@@ -38,7 +37,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/executions/{clientId}/execute-item/{id}")
     public void executeItem(@PathVariable UUID clientId, @PathVariable UUID id, @RequestBody ExecutedItemRequest executedItemRequest) {
-        ExecutedItem executedItem = itemsService.executeItem(executedItemRequest, clientId, id);
+        ItemExecution executedItem = itemsService.executeItem(executedItemRequest, clientId, id);
         CompletableFuture.supplyAsync(() -> itemsService.emitEvent(executedItem));
     }
 

@@ -43,7 +43,7 @@ public class TaskExecution {
     @ToString.Exclude
     @OneToMany(mappedBy = "taskExecution", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
-    private List<ExecutedItem> executedItemUserRelations;
+    private List<ItemExecution> executedItemUserRelations;
 
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)

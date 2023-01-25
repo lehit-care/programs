@@ -24,26 +24,17 @@ public class TasksService {
 //    private final MultimediaClient multimediaClient;
 
 
-    public Optional<Task> getByProgramPosition(UUID program,  int position){
-        return taskRepository.findByProgramIdAndPosition(program, position);
-    }
-
-    List<Task> getByProgramId(UUID programId){
-        return taskRepository.findByProgramId(programId);
-    }
 
     List<UUID> getIdsByProgramId(UUID programId){
         return taskRepository.selectIdsByProgramId(programId);
     }
 
-    @Transactional
-    public void removeUserData(UUID userId){
-        taskExecutionRepository.deleteByUserId(userId);
-    }
 
+//    todo check author
     @Transactional
     public void deleteTask(UUID taskId){
         var task = taskRepository.selectFullTask(taskId).orElseThrow();
+        taskRepository.delete(task);
 
         var multimediaList = task.getActionItems().stream()
                 .filter(ai -> ai.getInformationItem() != null)
@@ -54,12 +45,8 @@ public class TasksService {
         if(task.getAvatarUrl() != null)
             multimediaList.add(task.getAvatarUrl());
 
-        taskRepository.delete(task);
-
 //        if(!multimediaList.isEmpty())
 //            multimediaClient.deleteMultimediaList(multimediaList);
-
-        syncTasksPosition(task.getProgramId(), task.getPosition());
     }
 
 // todo change logic
@@ -74,19 +61,6 @@ public class TasksService {
 //    }
 
 
-    public void syncTasksPosition(UUID programId,  int position){
-        List<Task> tasks = taskRepository.findByProgramIdOrderByPositionAsc(programId, Task.class);
-        if(position > tasks.size())
-            return;
-
-        for(int pos = position; pos<=tasks.size(); pos++){
-            tasks.get(pos-1).setPosition(pos);
-        }
-    }
-
-    public long getProgramTasksCount(UUID programId){
-        return taskRepository.countByProgramId(programId);
-    }
 
 
 

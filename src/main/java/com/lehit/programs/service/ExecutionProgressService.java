@@ -1,8 +1,10 @@
 package com.lehit.programs.service;
 
 import com.lehit.common.enums.ExecutionStatus;
+import com.lehit.programs.model.ItemExecution;
 import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.TaskExecution;
+import com.lehit.programs.repository.ItemExecutionRepository;
 import com.lehit.programs.repository.ProgramExecutionRepository;
 import com.lehit.programs.repository.TaskExecutionRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,10 @@ import static com.lehit.common.enums.ExecutionStatus.STARTED;
 @Transactional(readOnly = true)
 public class ExecutionProgressService {
     private final TasksService tasksService;
+    private final ActionItemsService actionItemsService;
     private final TaskExecutionRepository taskExecutionRepository;
     private final ProgramExecutionRepository programExecutionRepository;
+    private final ItemExecutionRepository itemExecutionRepository;
 
 
     @Transactional
@@ -38,7 +42,7 @@ public class ExecutionProgressService {
                 .userId(userId)
                 .build());
 
-        var taskExecutions = tasksService.getIdsByProgramId(programId).stream()
+        var plannedTaskExecutions = tasksService.getIdsByProgramId(programId).stream()
                 .map(taskId -> TaskExecution.builder()
                         .programExecutionId(programExecution.getId())
                         .userId(userId)
@@ -46,7 +50,7 @@ public class ExecutionProgressService {
                         .build())
                 .collect(Collectors.toList());
 
-        taskExecutionRepository.saveAll(taskExecutions);
+        taskExecutionRepository.saveAll(plannedTaskExecutions);
         return programExecution;
     }
 
@@ -55,11 +59,18 @@ public class ExecutionProgressService {
     public TaskExecution startTaskExecution(UUID userId, UUID taskId){
         var exe = taskExecutionRepository.findByUserIdAndTaskId(userId, taskId);
 
-        log.debug("exe.get {}", exe.get());
-
         return exe.map(existingExecution -> {
             existingExecution.setStartedAt(LocalDateTime.now());
             existingExecution.setLifecycleStatus(STARTED);
+            var plannedItemExecutions = actionItemsService.getIdsByTaskId(taskId).stream()
+                    .map(aiId -> ItemExecution.builder()
+                            .userId(userId)
+                            .taskExecutionId(existingExecution.getId())
+                            .itemId(aiId)
+                            .build())
+                    .collect(Collectors.toList());
+            itemExecutionRepository.saveAll(plannedItemExecutions);
+
             return exe;
         }).get().orElseThrow();
     }
@@ -79,6 +90,13 @@ public class ExecutionProgressService {
 
     public ProgramExecution getActiveProgramExecutionData(UUID userId){
         return programExecutionRepository.findByUserIdAndLifecycleStatus(userId, STARTED);
+    }
+
+    public TaskExecution getTaskExecutionData(UUID userId, UUID taskExecutionId){
+        TaskExecution execution = taskExecutionRepository.findById(taskExecutionId).orElseThrow();
+        Asserts.check(userId.equals(execution.getUserId()), "Not allowed.");
+
+        return execution;
     }
 
 }
