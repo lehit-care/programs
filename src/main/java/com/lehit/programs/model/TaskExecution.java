@@ -12,6 +12,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@NamedEntityGraph(
+        name = "including-tasks-and-item-executions",
+        attributeNodes = {
+                @NamedAttributeNode(value = "itemExecutions", subgraph = "executions-subgraph"),
+                @NamedAttributeNode(value = "task")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "executions-subgraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("actionItem")
+                        }
+                )
+        }
+)
+
+
 @Entity
 @Getter @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -43,7 +60,7 @@ public class TaskExecution {
     @ToString.Exclude
     @OneToMany(mappedBy = "taskExecution", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
-    private List<ItemExecution> executedItemUserRelations;
+    private List<ItemExecution> itemExecutions;
 
     @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)

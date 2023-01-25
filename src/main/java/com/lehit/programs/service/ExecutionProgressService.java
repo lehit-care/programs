@@ -4,6 +4,8 @@ import com.lehit.common.enums.ExecutionStatus;
 import com.lehit.programs.model.ItemExecution;
 import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.TaskExecution;
+import com.lehit.programs.model.payload.ExecutedItemRequest;
+import com.lehit.programs.model.projection.TaskExecutionWithItemsProjection;
 import com.lehit.programs.repository.ItemExecutionRepository;
 import com.lehit.programs.repository.ProgramExecutionRepository;
 import com.lehit.programs.repository.TaskExecutionRepository;
@@ -84,16 +86,26 @@ public class ExecutionProgressService {
 
         execution.setFinishedAt(LocalDateTime.now());
         execution.setLifecycleStatus(ExecutionStatus.FINISHED);
-
         return execution;
+    }
+
+    @Transactional
+    public ItemExecution executeItem(ExecutedItemRequest rel, UUID userId, UUID itemId){
+        var plannedExe = itemExecutionRepository.findByTaskExecutionIdAndItemId(rel.taskExecutionId(), itemId)
+                .orElseThrow();
+//        todo assert User
+
+        plannedExe.setLifecycleStatus(ExecutionStatus.FINISHED);
+        plannedExe.setItemType(rel.itemType());
+        return plannedExe;
     }
 
     public ProgramExecution getActiveProgramExecutionData(UUID userId){
         return programExecutionRepository.findByUserIdAndLifecycleStatus(userId, STARTED);
     }
 
-    public TaskExecution getTaskExecutionData(UUID userId, UUID taskExecutionId){
-        TaskExecution execution = taskExecutionRepository.findById(taskExecutionId).orElseThrow();
+    public TaskExecutionWithItemsProjection getTaskExecutionData(UUID userId, UUID taskExecutionId){
+        var execution = taskExecutionRepository.selectByExeId(taskExecutionId).orElseThrow();
         Asserts.check(userId.equals(execution.getUserId()), "Not allowed.");
 
         return execution;

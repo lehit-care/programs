@@ -38,18 +38,6 @@ public class ActionItemsService {
         return itemRepository.selectIdsByTaskId(taskId);
     }
 
-    @Transactional
-    public ItemExecution executeItem(ExecutedItemRequest rel, UUID userId, UUID itemId){
-        var plannedExe = itemExecutionRepository.findByTaskExecutionIdAndItemId(rel.taskExecutionId(), itemId)
-                .orElseThrow();
-//        todo assert User
-
-        plannedExe.setLifecycleStatus(ExecutionStatus.FINISHED);
-        plannedExe.setItemType(rel.itemType());
-        return plannedExe;
-    }
-
-
     public ItemExecution emitEvent(ItemExecution executedItem){
         if (kafkaEnabled){
             kafkaProducer.send(executedItem);

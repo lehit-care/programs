@@ -4,6 +4,7 @@ import com.lehit.programs.model.ItemExecution;
 import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.TaskExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
+import com.lehit.programs.model.projection.TaskExecutionWithItemsProjection;
 import com.lehit.programs.service.ActionItemsService;
 import com.lehit.programs.service.ExecutionProgressService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/executions/{clientId}/execute-item/{id}")
     public void executeItem(@PathVariable UUID clientId, @PathVariable UUID id, @RequestBody ExecutedItemRequest executedItemRequest) {
-        ItemExecution executedItem = itemsService.executeItem(executedItemRequest, clientId, id);
+        ItemExecution executedItem = executionService.executeItem(executedItemRequest, clientId, id);
         CompletableFuture.supplyAsync(() -> itemsService.emitEvent(executedItem));
     }
 
@@ -50,6 +51,11 @@ public class UserController {
     @GetMapping("/executions/{clientId}/current-program")
     public ProgramExecution getCurrentProgramData(@PathVariable UUID clientId) {
         return executionService.getActiveProgramExecutionData(clientId);
+    }
+
+    @GetMapping("/executions/{clientId}/task-exe/{taskExecutionId}")
+    public TaskExecutionWithItemsProjection getCurrentProgramData(@PathVariable UUID clientId, @PathVariable UUID taskExecutionId) {
+        return executionService.getTaskExecutionData(clientId, taskExecutionId);
     }
 
 }

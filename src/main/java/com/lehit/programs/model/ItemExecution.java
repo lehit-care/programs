@@ -20,16 +20,11 @@ import java.util.UUID;
 @Builder @ToString(onlyExplicitlyIncluded = true)
 @IdClass(ExecutedItemCompositeKey.class)
 public class ItemExecution extends Auditable implements Persistable<ExecutedItemCompositeKey> {
-
-    @Schema(hidden = true)
     @ToString.Include
     private UUID userId;
 
-
-    @Schema(hidden = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", insertable = false, updatable = false)
-    @JsonIgnore
     private ActionItem actionItem;
 
     @Column(name = "item_id")
@@ -38,7 +33,7 @@ public class ItemExecution extends Auditable implements Persistable<ExecutedItem
     @ToString.Include
     private UUID itemId;
 
-    @Schema(hidden = true)
+    @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "execution_task_id", insertable = false, updatable = false)
     @JsonIgnore
