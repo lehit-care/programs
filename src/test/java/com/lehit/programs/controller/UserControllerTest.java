@@ -110,5 +110,20 @@ class UserControllerTest  {
 
 
 
+    @Test
+    void getAllPrograms() throws Exception {
+
+        testDataTx.saveProgram(testDataGenerator.generateProgram());
+        testDataTx.saveProgram(testDataGenerator.generateProgram());
+        testDataTx.saveProgram(testDataGenerator.generateProgram());
+
+
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/programs")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .queryParam("page", "0"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value("3"));
+    }
+
 
 }

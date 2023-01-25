@@ -8,13 +8,16 @@ import com.lehit.programs.service.TasksService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
-//todo basePath
+@RequestMapping("/api/v1")
 @Slf4j
 @RequiredArgsConstructor
 public class ProgramContentController {
@@ -39,6 +42,15 @@ public class ProgramContentController {
     @DeleteMapping("/author/{authorId}/programs/{id}")
     public void deleteProgram(@PathVariable UUID authorId, @PathVariable UUID id) {
         programsService.deleteProgram(authorId, id);
+    }
+
+//    todo check why pageable is not instantiated
+    @GetMapping("/programs")
+    public Slice<Program> getAllPrograms(@ParameterObject Pageable pageable){
+        if (pageable == null)
+            pageable = Pageable.unpaged();
+
+        return programsService.findAll(pageable);
     }
 
 

@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1")
-public class UserController {
+public class ExecutionController {
     private final ActionItemsService itemsService;
     private final ExecutionProgressService executionService;
 

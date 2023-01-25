@@ -5,10 +5,10 @@ import com.lehit.programs.repository.ProgramRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.UUID;
 
@@ -39,6 +39,10 @@ public class ProgramsService {
         var program = programRepository.findById(programId).orElseThrow();
         Asserts.check(authorId.equals(program.getAuthor()), "Only Author can delete the Program.");
         programRepository.delete(program);
+    }
+
+    public Slice<Program> findAll(Pageable pageable){
+        return programRepository.findAll(pageable);
     }
 
 }
