@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 
 @Slf4j
 @Service
@@ -17,20 +16,9 @@ public class KafkaProducer {
 
     private final KafkaTemplate<String, ItemExecution> kafkaTemplate;
 
+//    todo callback
     public void send(ItemExecution message){
-        var res = kafkaTemplate.send(topicName, message.getUserId().toString(), message);
-
-        res.addCallback(new ListenableFutureCallback() {
-            @Override
-            public void onFailure(Throwable ex) {
-                log.error("error during event submission: {}", ex.getMessage());
-            }
-
-            @Override
-            public void onSuccess(Object result) {
-                log.debug("event submitted {}", message);
-            }
-        });
+        kafkaTemplate.send(topicName, message.getUserId().toString(), message);
     }
 
 }
