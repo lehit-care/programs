@@ -1,0 +1,39 @@
+version: '3.8'
+
+volumes:
+  pg_db_volume:
+    driver: local
+
+services:
+
+  postgres:
+    image: postgres:12
+    container_name: postgres-programs
+    platform: linux/arm64
+    volumes:
+      - pg_db_volume:/var/lib/postgresql/data
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=programs
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+
+
+#  config-server:
+#    image: config-server-m1
+#    platform: linux/arm64
+#    ports:
+#      - "8888:8888"
+#    environment:
+#      - "CONFIG_REPO=https://github.com/XXX/configs.git"
+
+
+#  redis-server:
+#    platform: linux/arm64
+#    image: 'redis'
+#    ports:
+#      - "6379:6379"
+
