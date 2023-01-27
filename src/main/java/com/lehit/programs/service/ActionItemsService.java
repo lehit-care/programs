@@ -1,9 +1,8 @@
 package com.lehit.programs.service;
 
-import com.lehit.common.enums.ExecutionStatus;
 import com.lehit.programs.kafka.producer.KafkaProducer;
+import com.lehit.programs.model.ActionItem;
 import com.lehit.programs.model.ItemExecution;
-import com.lehit.programs.model.payload.ExecutedItemRequest;
 import com.lehit.programs.model.payload.ProgramSequence;
 import com.lehit.programs.repository.ActionItemRepository;
 import com.lehit.programs.repository.ItemExecutionRepository;
@@ -37,6 +36,12 @@ public class ActionItemsService {
     List<UUID> getIdsByTaskId(UUID taskId){
         return itemRepository.selectIdsByTaskId(taskId);
     }
+
+    @Transactional
+    public ActionItem save(ActionItem ai){
+        return itemRepository.save(ai);
+    }
+
 
     public ItemExecution emitEvent(ItemExecution executedItem){
         if (kafkaEnabled){

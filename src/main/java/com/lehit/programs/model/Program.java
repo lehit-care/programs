@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lehit.programs.model.enums.ContentVisibilityStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -39,7 +38,6 @@ public class Program implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @NotNull
     private UUID author;
 
     @JsonIgnore

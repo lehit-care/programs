@@ -1,6 +1,8 @@
 package com.lehit.programs.controller;
 
+import com.lehit.programs.model.ActionItem;
 import com.lehit.programs.model.Program;
+import com.lehit.programs.model.Task;
 import com.lehit.programs.model.payload.ProgramSequence;
 import com.lehit.programs.service.ActionItemsService;
 import com.lehit.programs.service.ProgramsService;
@@ -57,6 +59,13 @@ public class ProgramContentController {
 
 
     //    Tasks
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/tasks")
+    public Task saveTask(@Valid @RequestBody Task task) {
+        return tasksService.save(task);
+    }
+
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/tasks/{id}")
     public void deleteTask(@PathVariable UUID id) {
@@ -83,6 +92,13 @@ public class ProgramContentController {
     }
 
     //    ActionItems
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/items")
+    public ActionItem saveActionItem(@Valid @RequestBody ActionItem ai) {
+        return itemsService.save(ai);
+    }
+
+
     @DeleteMapping("/items/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteItem(@PathVariable UUID id) {

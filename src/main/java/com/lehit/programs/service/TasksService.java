@@ -1,6 +1,5 @@
 package com.lehit.programs.service;
 
-import com.lehit.programs.client.feign.MultimediaClient;
 import com.lehit.programs.model.Task;
 import com.lehit.programs.model.payload.ProgramSequence;
 import com.lehit.programs.repository.TaskExecutionRepository;
@@ -10,7 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -27,6 +29,11 @@ public class TasksService {
 
     List<UUID> getIdsByProgramId(UUID programId){
         return taskRepository.selectIdsByProgramId(programId);
+    }
+
+    @Transactional
+    public Task save(Task task){
+        return taskRepository.save(task);
     }
 
 
