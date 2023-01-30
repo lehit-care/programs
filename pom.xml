@@ -106,8 +106,8 @@
 
 		<dependency>
 			<groupId>io.sentry</groupId>
-			<artifactId>sentry-spring-boot-starter</artifactId>
-			<version>6.4.2</version>
+			<artifactId>sentry-spring-boot-starter-jakarta</artifactId>
+			<version>6.13.0</version>
 		</dependency>
 
 		<dependency>
