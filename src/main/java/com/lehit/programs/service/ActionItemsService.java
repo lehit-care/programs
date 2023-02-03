@@ -3,12 +3,15 @@ package com.lehit.programs.service;
 import com.lehit.programs.kafka.producer.KafkaProducer;
 import com.lehit.programs.model.ActionItem;
 import com.lehit.programs.model.ItemExecution;
+import com.lehit.programs.model.Task;
 import com.lehit.programs.model.payload.ProgramSequence;
 import com.lehit.programs.repository.ActionItemRepository;
 import com.lehit.programs.repository.ItemExecutionRepository;
 import com.lehit.programs.repository.TaskRepository;
+import com.lehit.programs.service.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +26,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ActionItemsService {
-    private final ItemExecutionRepository itemExecutionRepository;
     private final ActionItemRepository itemRepository;
     private final TaskRepository taskRepository;
     private final KafkaProducer kafkaProducer;
+    private final BeanUtils beanUtils;
+
 //    private final MultimediaClient multimediaClient;
 
     @Value("${spring.kafka.enabled}")
@@ -42,6 +46,18 @@ public class ActionItemsService {
         return itemRepository.save(ai);
     }
 
+    @Transactional
+    public ActionItem updateItem(UUID authorId, UUID aiId, Map<String, Object> fields) {
+        var item = itemRepository.findById(aiId).orElseThrow();
+        var task = taskRepository.selectFullTask(item.getTaskId()).orElseThrow();
+
+        Asserts.check(authorId.equals(task.getProgram().getAuthor()), "Not allowed.");
+        beanUtils.updateFields(fields, item);
+
+        item.setId(aiId);
+        return item;
+    }
+
 
     public ItemExecution emitEvent(ItemExecution executedItem){
         if (kafkaEnabled){
@@ -52,10 +68,13 @@ public class ActionItemsService {
 
 
     @Transactional
-    public void removeActionItem(UUID itemId){
+    public void removeActionItem(UUID authorId, UUID itemId){
         var item = itemRepository.findById(itemId).orElseThrow();
-        var task = taskRepository.findById(item.getTaskId()).orElseThrow();
-        var informationItem = item.getInformationItem();
+        var task = taskRepository.selectFullTask(item.getTaskId()).orElseThrow();
+
+        Asserts.check(authorId.equals(task.getProgram().getAuthor()), "Not allowed.");
+
+//        var informationItem = item.getInformationItem();
 
         itemRepository.delete(item);
 
@@ -72,13 +91,13 @@ public class ActionItemsService {
         item.setTaskId(null);
     }
 
-    //    todo LCS check or not if planned
+    //    todo LCS check or not if planned -- maybe can work without the check
     @Transactional
     public List<ProgramSequence.ExecutableEntitySequence> shuffleItems(UUID taskId, List<ProgramSequence.ExecutableEntitySequence> sequenceList){
         var task = taskRepository.findById(taskId).orElseThrow();
 
 
-        Map<UUID, Integer> sequenceMap =  sequenceList.stream()
+        Map<UUID, Integer> sequenceMap = sequenceList.stream()
                 .collect(Collectors.toMap(ProgramSequence.ExecutableEntitySequence::id, ProgramSequence.ExecutableEntitySequence::position));
 
         var items = itemRepository.findAllById(sequenceMap.keySet());

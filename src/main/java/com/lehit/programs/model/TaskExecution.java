@@ -35,8 +35,7 @@ import java.util.UUID;
 @NoArgsConstructor @AllArgsConstructor
 @Builder @ToString
 public class TaskExecution {
-//    todo userId-TaskId - unique
-
+//     userId-TaskId - unique -- what if cancelled?
 
     @Schema(hidden = true)
     @Id

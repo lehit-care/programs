@@ -1,6 +1,7 @@
 package com.lehit.programs.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lehit.programs.model.enums.ContentVisibilityStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -28,6 +29,7 @@ public class Program implements Serializable {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @EqualsAndHashCode.Include
     @ToString.Include
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID id;
 
     @NotBlank(message = "Title is mandatory")

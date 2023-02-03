@@ -1,11 +1,15 @@
 package com.lehit.programs.service;
 
+import com.lehit.programs.model.Program;
 import com.lehit.programs.model.Task;
 import com.lehit.programs.model.payload.ProgramSequence;
+import com.lehit.programs.repository.ProgramRepository;
 import com.lehit.programs.repository.TaskExecutionRepository;
 import com.lehit.programs.repository.TaskRepository;
+import com.lehit.programs.service.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,8 +26,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class TasksService {
     private final TaskRepository taskRepository;
-    private final TaskExecutionRepository taskExecutionRepository;
-//    private final MultimediaClient multimediaClient;
+    private final ProgramRepository programRepository;
+    private final BeanUtils beanUtils;
+    //    private final MultimediaClient multimediaClient;
 
 
 
@@ -32,15 +37,28 @@ public class TasksService {
     }
 
     @Transactional
-    public Task save(Task task){
+    public Task save(UUID authorId, Task task){
+        Asserts.check(authorId.equals(programRepository.findById(task.getProgramId()).orElseThrow().getAuthor()), "Not allowed.");
         return taskRepository.save(task);
     }
 
-
-//    todo check author
     @Transactional
-    public void deleteTask(UUID taskId){
+    public Task updateTask(UUID authorId, UUID taskId, Map<String, Object> fields) {
         var task = taskRepository.selectFullTask(taskId).orElseThrow();
+        Asserts.check(authorId.equals(task.getProgram().getAuthor()), "Only Author can modify the Program.");
+
+        beanUtils.updateFields(fields, task);
+        task.setId(taskId);
+        return task;
+    }
+
+
+    @Transactional
+    public void deleteTask(UUID authorId, UUID taskId){
+        var task = taskRepository.selectFullTask(taskId).orElseThrow();
+
+        Asserts.check(authorId.equals(task.getProgram().getAuthor()), "Not allowed.");
+
         taskRepository.delete(task);
 
         var multimediaList = task.getActionItems().stream()

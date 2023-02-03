@@ -2,104 +2,44 @@ package com.lehit.programs.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
-import org.springframework.core.log.LogFormatUtils;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpHeaders;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.orm.jpa.JpaSystemException;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 @Slf4j
-//todo implement method
 public class ControllerExceptionAdvice {
-//    @ExceptionHandler(IllegalStateException.class)
-//    public ResponseEntity<?> exceptionHandler(IllegalStateException ex) {
-//        return forbidden(new HttpHeaders(), ex);
-//    }
-//
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    public ResponseEntity<?> exceptionHandler(ConstraintViolationException ex) {
-//        log.debug("bad request: ", ex);
-//        return badRequest(new HttpHeaders(), ex);
-//    }
-//
-//    @ExceptionHandler(DataIntegrityViolationException.class)
-//    public ResponseEntity<?> exceptionHandler(DataIntegrityViolationException ex) {
-//        log.debug("bad request: ", ex);
-//        return badRequest(new HttpHeaders(), ex);
-//    }
-//
-//    @ExceptionHandler(JpaSystemException.class)
-//    public ResponseEntity<?> exceptionHandler(JpaSystemException ex) {
-//        log.debug("bad request: ", ex);
-//        return badRequest(new HttpHeaders(), ex);
-//    }
-//
-//    @ExceptionHandler(NoSuchElementException.class)
-//    public ResponseEntity<?> exceptionHandler(NoSuchElementException ex) {
-//        return notFound(new HttpHeaders());
-//    }
-//
-//
-//    private static ResponseEntity<?> notFound(HttpHeaders headers) {
-//        return response(HttpStatus.NOT_FOUND, headers, null);
-//    }
-//
-//    private static ResponseEntity<ExceptionMessage> badRequest(HttpHeaders headers, Exception throwable) {
-//        return errorResponse(HttpStatus.BAD_REQUEST, headers, throwable);
-//    }
-//
-//    private static ResponseEntity<ExceptionMessage> forbidden(HttpHeaders headers, Exception throwable) {
-//        return errorResponse(HttpStatus.FORBIDDEN, headers, throwable);
-//    }
-//
-//    private static ResponseEntity<ExceptionMessage> errorResponse(HttpStatus status, HttpHeaders headers,
-//                                                                  Exception exception) {
-//
-//        if (exception != null) {
-//
-//            String message = exception.getMessage();
-//            log.debug(LogFormatUtils.formatValue(message, -1, true), exception);
-//
-//            if (StringUtils.hasText(message)) {
-//                return response(status, headers, new ExceptionMessage(exception));
-//            }
-//        }
-//
-//        return response(status, headers, null);
-//    }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> exceptionHandler(IllegalStateException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(
-            MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return errors;
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<String> exceptionHandler(ConstraintViolationException ex) {
+        log.debug("bad request: ", ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getCause().getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> exceptionHandler(DataIntegrityViolationException ex) {
+        log.debug("bad request: ", ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getCause().getMessage());
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<String> exceptionHandler(EmptyResultDataAccessException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
 
-    private static <T> ResponseEntity<T> response(HttpStatus status, HttpHeaders headers, T body) {
 
-        Assert.notNull(headers, "Headers must not be null");
-        Assert.notNull(status, "HttpStatus must not be null");
-
-        return new ResponseEntity<T>(body, headers, status);
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> exceptionHandler(NoSuchElementException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

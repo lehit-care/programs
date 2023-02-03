@@ -93,7 +93,8 @@ public class ExecutionProgressService {
     public ItemExecution executeItem(ExecutedItemRequest rel, UUID userId, UUID itemId){
         var plannedExe = itemExecutionRepository.findByTaskExecutionIdAndItemId(rel.taskExecutionId(), itemId)
                 .orElseThrow();
-//        todo assert User
+
+        Asserts.check(userId.equals(plannedExe.getUserId()), "Not allowed.");
 
         plannedExe.setLifecycleStatus(ExecutionStatus.FINISHED);
         plannedExe.setItemType(rel.itemType());

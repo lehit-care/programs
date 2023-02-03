@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface ProgramRepository extends CrudRepository<Program, UUID>, JpaSpecificationExecutor<Program>{
     Slice<Program> findAll(Pageable pageable);
 
+    Slice<Program> findByAuthor(UUID authorId, Pageable pageable);
+
 }

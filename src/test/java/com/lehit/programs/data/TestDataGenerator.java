@@ -49,6 +49,14 @@ public class TestDataGenerator {
                 .build();
     }
 
+    public Program generateProgram(UUID authorId){
+        return Program.builder()
+                .description("test")
+                .title("test")
+                .author(authorId)
+                .build();
+    }
+
     public int generateRandomStep(){
        return new Random().nextInt() & Integer.MAX_VALUE;
     }

@@ -1,5 +1,7 @@
 package com.lehit.programs.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lehit.common.enums.ExecutionStatus;
 import com.lehit.programs.data.TestDataGenerator;
 import com.lehit.programs.data.TestDataTx;
@@ -17,13 +19,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest
@@ -113,17 +113,62 @@ class UserControllerTest  {
     @Test
     void getAllPrograms() throws Exception {
 
-        testDataTx.saveProgram(testDataGenerator.generateProgram());
-        testDataTx.saveProgram(testDataGenerator.generateProgram());
-        testDataTx.saveProgram(testDataGenerator.generateProgram());
+        for(int i=0; i<30; i++)
+            testDataTx.saveProgram(testDataGenerator.generateProgram());
+
 
 
         this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/programs")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .queryParam("page", "0"))
+                )
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value("3"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value("30"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pageable.pageSize").value("20"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value("20"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.last").value(false));
     }
 
 
+    @Test
+    void getProgramsByAuthor() throws Exception {
+
+        var authorId = UUID.randomUUID();
+
+        testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+
+
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs", authorId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .queryParam("page", "0"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.pageable.pageSize").value("20"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value("3"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.last").value(true));
+    }
+
+
+    @Test
+    void updateBasicProgramData() throws Exception {
+
+        var authorId = UUID.randomUUID();
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+
+        var updatedDesc = UUID.randomUUID().toString();
+
+
+        this.mockMvc.perform(patch(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", authorId, program.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(serialize(Map.of("description", updatedDesc))))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(updatedDesc));
+    }
+
+
+    protected String serialize(Object entity) throws JsonProcessingException {
+        ObjectMapper o = new ObjectMapper();
+        return o.writeValueAsString(entity);
+    }
 }

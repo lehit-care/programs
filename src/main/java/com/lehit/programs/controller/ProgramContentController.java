@@ -16,6 +16,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -36,8 +37,8 @@ public class ProgramContentController {
     }
 
     @PatchMapping("/author/{authorId}/programs/{programId}")
-    public Program updateProgramBasicData(@PathVariable UUID authorId, @PathVariable UUID programId,  @RequestBody Program program) {
-        return programsService.updateProgramData(authorId, programId, program);
+    public Program updateProgramBasicData(@PathVariable UUID authorId, @PathVariable UUID programId,  @RequestBody Map<String, Object> programPayload) {
+        return programsService.updateProgramData(authorId, programId, programPayload);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -46,30 +47,34 @@ public class ProgramContentController {
         programsService.deleteProgram(authorId, id);
     }
 
-//    todo check why pageable is not instantiated
+    @GetMapping("/author/{authorId}/programs")
+    public Slice<Program> getProgramsByAuthor(@PathVariable UUID authorId, @ParameterObject Pageable pageable){
+        return programsService.findByAuthor(authorId, pageable);
+    }
+
     @GetMapping("/programs")
     public Slice<Program> getAllPrograms(@ParameterObject Pageable pageable){
-        if (pageable == null)
-            pageable = Pageable.unpaged();
-
         return programsService.findAll(pageable);
     }
 
 
-
-
     //    Tasks
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/tasks")
-    public Task saveTask(@Valid @RequestBody Task task) {
-        return tasksService.save(task);
+    @PostMapping("/author/{authorId}/tasks")
+    public Task saveTask(@PathVariable UUID authorId, @Valid @RequestBody Task task) {
+        return tasksService.save(authorId, task);
     }
 
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/tasks/{id}")
-    public void deleteTask(@PathVariable UUID id) {
-        tasksService.deleteTask(id);
+    @DeleteMapping("/author/{authorId}/tasks/{id}")
+    public void deleteTask(@PathVariable UUID authorId, @PathVariable UUID id) {
+        tasksService.deleteTask(authorId, id);
+    }
+
+    @PatchMapping("/author/{authorId}/tasks/{id}")
+    public Task updateTaskBasicData(@PathVariable UUID authorId, @PathVariable UUID programId,  @RequestBody Map<String, Object> payload) {
+        return tasksService.updateTask(authorId, programId, payload);
     }
 
 //    @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -94,15 +99,21 @@ public class ProgramContentController {
     //    ActionItems
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/items")
+    //    todo ("/author/{authorId}/items}")
     public ActionItem saveActionItem(@Valid @RequestBody ActionItem ai) {
         return itemsService.save(ai);
     }
 
 
-    @DeleteMapping("/items/{id}")
+    @DeleteMapping("/author/{authorId}/items/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteItem(@PathVariable UUID id) {
-        itemsService.removeActionItem(id);
+    public void deleteItem(@PathVariable UUID authorId, @PathVariable UUID id) {
+        itemsService.removeActionItem(authorId, id);
+    }
+
+    @PatchMapping("/author/{authorId}/items/{id}")
+    public ActionItem updateAIBasicData(@PathVariable UUID authorId, @PathVariable UUID aiId,  @RequestBody Map<String, Object> payload) {
+        return itemsService.updateItem(authorId, aiId, payload);
     }
 
 

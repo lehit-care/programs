@@ -2,6 +2,7 @@ package com.lehit.programs.service;
 
 import com.lehit.programs.model.Program;
 import com.lehit.programs.repository.ProgramRepository;
+import com.lehit.programs.service.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -18,6 +20,7 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class ProgramsService {
     private final ProgramRepository programRepository;
+    private final BeanUtils beanUtils;
 
     @Transactional
     public Program saveProgram(Program program){
@@ -25,14 +28,15 @@ public class ProgramsService {
     }
 
     @Transactional
-    public Program updateProgramData(UUID authorId, UUID programId, Program programPayload){
+    public Program updateProgramData(UUID authorId, UUID programId, Map<String, Object> fields) {
         var program = programRepository.findById(programId).orElseThrow();
         Asserts.check(authorId.equals(program.getAuthor()), "Only Author can modify the Program.");
-        Asserts.check(programPayload.getId() == null, "The id is not allowed in the payload.");
 
-//       todo beanUtils.copy programPayload
+        beanUtils.updateFields(fields, program);
+        program.setId(programId);
         return program;
     }
+
 
     @Transactional
     public void deleteProgram(UUID authorId, UUID programId){
@@ -43,6 +47,11 @@ public class ProgramsService {
 
     public Slice<Program> findAll(Pageable pageable){
         return programRepository.findAll(pageable);
+    }
+
+
+    public Slice<Program> findByAuthor(UUID authorId, Pageable pageable){
+        return programRepository.findByAuthor(authorId, pageable);
     }
 
 }
