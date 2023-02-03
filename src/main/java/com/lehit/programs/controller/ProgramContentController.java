@@ -98,10 +98,9 @@ public class ProgramContentController {
 
     //    ActionItems
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/items")
-    //    todo ("/author/{authorId}/items}")
-    public ActionItem saveActionItem(@Valid @RequestBody ActionItem ai) {
-        return itemsService.save(ai);
+    @PostMapping("/author/{authorId}/items")
+    public ActionItem saveActionItem(@PathVariable UUID authorId, @Valid @RequestBody ActionItem ai) {
+        return itemsService.save(authorId, ai);
     }
 
 

@@ -41,8 +41,12 @@ public class ActionItemsService {
         return itemRepository.selectIdsByTaskId(taskId);
     }
 
+
     @Transactional
-    public ActionItem save(ActionItem ai){
+    public ActionItem save(UUID authorId, ActionItem ai){
+        var task = taskRepository.selectFullTask(ai.getTaskId()).orElseThrow();
+        Asserts.check(authorId.equals(task.getProgram().getAuthor()), "Not allowed.");
+
         return itemRepository.save(ai);
     }
 
