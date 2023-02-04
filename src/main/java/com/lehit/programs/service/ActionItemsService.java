@@ -3,16 +3,16 @@ package com.lehit.programs.service;
 import com.lehit.programs.kafka.producer.KafkaProducer;
 import com.lehit.programs.model.ActionItem;
 import com.lehit.programs.model.ItemExecution;
-import com.lehit.programs.model.Task;
 import com.lehit.programs.model.payload.ProgramSequence;
 import com.lehit.programs.repository.ActionItemRepository;
-import com.lehit.programs.repository.ItemExecutionRepository;
 import com.lehit.programs.repository.TaskRepository;
 import com.lehit.programs.service.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +39,10 @@ public class ActionItemsService {
 
     List<UUID> getIdsByTaskId(UUID taskId){
         return itemRepository.selectIdsByTaskId(taskId);
+    }
+
+    public Slice<ActionItem> getByTaskId(UUID taskId, Pageable pageable){
+        return itemRepository.findByTaskId(taskId, pageable);
     }
 
 

@@ -4,6 +4,8 @@ import com.lehit.programs.model.ActionItem;
 import com.lehit.programs.model.Program;
 import com.lehit.programs.model.Task;
 import com.lehit.programs.model.payload.ProgramSequence;
+import com.lehit.programs.model.projection.ProgramWithTasksProjection;
+import com.lehit.programs.model.projection.TaskWithItemsProjection;
 import com.lehit.programs.service.ActionItemsService;
 import com.lehit.programs.service.ProgramsService;
 import com.lehit.programs.service.TasksService;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -50,6 +53,16 @@ public class ProgramContentController {
     @GetMapping("/author/{authorId}/programs")
     public Slice<Program> getProgramsByAuthor(@PathVariable UUID authorId, @ParameterObject Pageable pageable){
         return programsService.findByAuthor(authorId, pageable);
+    }
+
+    @GetMapping("/author/{authorId}/programs/{id}")
+    public Optional<ProgramWithTasksProjection> getProgramsByAuthor(@PathVariable UUID id){
+        return programsService.findProgramWithTasks(id);
+    }
+
+    @GetMapping("/author/{authorId}/programs/{id}/tasks")
+    public Slice<TaskWithItemsProjection> getProgramTasks(@PathVariable UUID id, @ParameterObject Pageable pageable){
+        return tasksService.getTasksByProgram(id, pageable);
     }
 
     @GetMapping("/programs")
@@ -96,6 +109,11 @@ public class ProgramContentController {
         return sequence;
     }
 
+    @GetMapping("/programs/{id}/tasks")
+    public Slice<TaskWithItemsProjection> getProgramTasksSlice (@PathVariable UUID programId, @ParameterObject Pageable pageable) {
+       return tasksService.getTasksByProgram(programId, pageable);
+    }
+
     //    ActionItems
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/author/{authorId}/items")
@@ -113,6 +131,11 @@ public class ProgramContentController {
     @PatchMapping("/author/{authorId}/items/{id}")
     public ActionItem updateAIBasicData(@PathVariable UUID authorId, @PathVariable UUID aiId,  @RequestBody Map<String, Object> payload) {
         return itemsService.updateItem(authorId, aiId, payload);
+    }
+
+    @GetMapping("/task/{taskId}/items")
+    public Slice<ActionItem> getAIsByTask(@PathVariable UUID taskId, @ParameterObject Pageable pageable){
+        return itemsService.getByTaskId(taskId, pageable);
     }
 
 

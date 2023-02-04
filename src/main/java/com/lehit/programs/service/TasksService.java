@@ -1,15 +1,16 @@
 package com.lehit.programs.service;
 
-import com.lehit.programs.model.Program;
 import com.lehit.programs.model.Task;
 import com.lehit.programs.model.payload.ProgramSequence;
+import com.lehit.programs.model.projection.TaskWithItemsProjection;
 import com.lehit.programs.repository.ProgramRepository;
-import com.lehit.programs.repository.TaskExecutionRepository;
 import com.lehit.programs.repository.TaskRepository;
 import com.lehit.programs.service.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,7 +87,9 @@ public class TasksService {
 //    }
 
 
-
+    public Slice<TaskWithItemsProjection> getTasksByProgram(UUID programId, Pageable pageable){
+        return taskRepository.selectTasksWithItemsByProgramId(programId, pageable);
+    }
 
 
     @Transactional

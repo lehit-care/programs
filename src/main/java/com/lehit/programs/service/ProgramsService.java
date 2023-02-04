@@ -1,6 +1,7 @@
 package com.lehit.programs.service;
 
 import com.lehit.programs.model.Program;
+import com.lehit.programs.model.projection.ProgramWithTasksProjection;
 import com.lehit.programs.repository.ProgramRepository;
 import com.lehit.programs.service.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,6 +39,14 @@ public class ProgramsService {
         return program;
     }
 
+    public Optional<Program> findById(UUID programId){
+        return programRepository.findById(programId);
+    }
+
+    public Optional<ProgramWithTasksProjection> findProgramWithTasks(UUID programId){
+        return programRepository.selectProgramWithTasks(programId);
+    }
+
 
     @Transactional
     public void deleteProgram(UUID authorId, UUID programId){
@@ -53,5 +63,6 @@ public class ProgramsService {
     public Slice<Program> findByAuthor(UUID authorId, Pageable pageable){
         return programRepository.findByAuthor(authorId, pageable);
     }
+
 
 }

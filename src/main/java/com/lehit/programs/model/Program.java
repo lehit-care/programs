@@ -13,6 +13,14 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
+
+@NamedEntityGraph(
+        name = "including-tasks",
+        attributeNodes = {
+                @NamedAttributeNode(value = "tasks")
+        }
+)
+
 @Entity
 @Getter @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -48,5 +56,4 @@ public class Program implements Serializable {
     private List<Task> tasks;
 
     public ContentVisibilityStatus visibilityStatus;
-
 }

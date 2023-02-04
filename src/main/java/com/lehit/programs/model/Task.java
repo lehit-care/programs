@@ -17,6 +17,13 @@ import java.util.UUID;
         }
 )
 
+@NamedEntityGraph(
+        name = "including-items",
+        attributeNodes = {
+                @NamedAttributeNode(value = "actionItems")
+        }
+)
+
 
 @Entity
 @Getter @Setter
@@ -57,5 +64,4 @@ public class Task implements Serializable {
     @EqualsAndHashCode.Include
     @ToString.Include
     private UUID programId;
-
 }
