@@ -83,6 +83,16 @@ class UserControllerTest  {
 
 
     @Test
+    void getActiveProgramStructureNotStarted() throws Exception{
+        UUID clientId = UUID.randomUUID();
+
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/current-program", clientId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
     void getActiveExecutionStructure() throws Exception {
         UUID clientId = UUID.randomUUID();
 
