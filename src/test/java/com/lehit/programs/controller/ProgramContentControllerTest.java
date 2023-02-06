@@ -127,6 +127,19 @@ class ProgramContentControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(updatedDesc));
     }
 
+    @Test
+    void updateBasicProgramDataNonExistingField() throws Exception {
+        var authorId = UUID.randomUUID();
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        var updatedDesc = UUID.randomUUID().toString();
+
+
+        this.mockMvc.perform(patch(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", authorId, program.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialize(Map.of("description2", updatedDesc))))
+                .andExpect(status().isBadRequest());
+    }
+
 
     protected String serialize(Object entity) throws JsonProcessingException {
         ObjectMapper o = new ObjectMapper();

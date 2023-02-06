@@ -1,5 +1,6 @@
 package com.lehit.programs.service.utils;
 
+import org.apache.http.util.Asserts;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ public class BeanUtils {
 
         fields.forEach((k, v) -> {
             Field field = org.springframework.util.ReflectionUtils.findField(objectInstance.getClass(), k);
+            Asserts.check(field != null, "Non existing field.");
             field.setAccessible(true);
             ReflectionUtils.setField(field, objectInstance, v);
         });
