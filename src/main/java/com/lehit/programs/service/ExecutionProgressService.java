@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.lehit.common.enums.ExecutionStatus.NEW;
 import static com.lehit.common.enums.ExecutionStatus.STARTED;
 
 @RequiredArgsConstructor
@@ -50,6 +51,7 @@ public class ExecutionProgressService {
                         .programExecutionId(programExecution.getId())
                         .userId(userId)
                         .taskId(taskId)
+                        .lifecycleStatus(NEW)
                         .build())
                 .collect(Collectors.toList());
 
