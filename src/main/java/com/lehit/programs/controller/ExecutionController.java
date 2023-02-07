@@ -50,8 +50,8 @@ public class ExecutionController {
     }
 
     @GetMapping("/executions/{clientId}/current-program")
-    public Optional<ProgramExecution> getCurrentProgramData(@PathVariable UUID clientId) {
-        return executionService.getActiveProgramExecutionData(clientId);
+    public ProgramExecution getCurrentProgramData(@PathVariable UUID clientId) {
+        return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
     }
 
     @GetMapping("/executions/{clientId}/task-exe/{taskExecutionId}")
