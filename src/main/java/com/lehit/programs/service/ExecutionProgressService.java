@@ -72,6 +72,7 @@ public class ExecutionProgressService {
                             .userId(userId)
                             .taskExecutionId(existingExecution.getId())
                             .itemId(aiId)
+                            .lifecycleStatus(NEW)
                             .build())
                     .collect(Collectors.toList());
             itemExecutionRepository.saveAll(plannedItemExecutions);
