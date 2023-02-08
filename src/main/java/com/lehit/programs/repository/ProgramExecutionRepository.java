@@ -12,12 +12,11 @@ import java.util.UUID;
 
 public interface ProgramExecutionRepository extends JpaRepository<ProgramExecution, UUID>, JpaSpecificationExecutor<ProgramExecution>{
 
-//    @EntityGraph(attributePaths = {"taskExecutions", "program"})
-    @EntityGraph(value = "including-programs-tasks-executions")
-    ProgramExecution findByUserIdAndLifecycleStatus(UUID userId, ExecutionStatus lifecycleStatus);
-
     @EntityGraph(value = "including-programs-tasks-executions")
     Optional<ProgramExecution> findTop1ByUserIdAndLifecycleStatusOrderByStartedAtDesc(UUID userId, ExecutionStatus lifecycleStatus);
 
-    UUID findByUserIdAndProgramId(UUID userId, UUID programId);
+
+    @EntityGraph(value = "including-programs-tasks-executions")
+    Optional<ProgramExecution> findByUserIdAndProgramId(UUID userId, UUID programId);
+
 }

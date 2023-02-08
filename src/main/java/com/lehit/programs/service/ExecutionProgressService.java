@@ -110,6 +110,10 @@ public class ExecutionProgressService {
         return programExecutionRepository.findTop1ByUserIdAndLifecycleStatusOrderByStartedAtDesc(userId, STARTED);
     }
 
+    public Optional<ProgramExecution> getByClientAndProgram(UUID userId, UUID programId){
+        return programExecutionRepository.findByUserIdAndProgramId(userId, programId);
+    }
+
     public TaskExecutionWithItemsProjection getTaskExecutionData(UUID userId, UUID taskExecutionId){
         var execution = taskExecutionRepository.selectByExeId(taskExecutionId).orElseThrow();
         Asserts.check(userId.equals(execution.getUserId()), "Not allowed.");

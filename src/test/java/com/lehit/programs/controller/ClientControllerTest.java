@@ -3,8 +3,6 @@ package com.lehit.programs.controller;
 import com.lehit.common.enums.ExecutionStatus;
 import com.lehit.programs.data.TestDataGenerator;
 import com.lehit.programs.data.TestDataTx;
-import com.lehit.programs.model.enums.ActionItemType;
-import com.lehit.programs.model.payload.ExecutedItemRequest;
 import com.lehit.programs.service.ExecutionProgressService;
 import com.lehit.programs.service.TasksService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Slf4j
-class UserControllerTest  {
+class ClientControllerTest {
     @Autowired
     private TestDataTx testDataTx;
     @Autowired
@@ -48,7 +46,7 @@ class UserControllerTest  {
     protected static final String CONTROLLER_URL_ROOT_PREFIX = "/api/v1/";
 
     @Test
-    void getActiveProgramStructure() throws Exception{
+    void OpenStartedProgram() throws Exception{
         UUID clientId = UUID.randomUUID();
 
         var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
@@ -72,69 +70,32 @@ class UserControllerTest  {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
 
-        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/current-program", clientId)
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/client/{clientId}/programs/{programId}", clientId, program.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
-
     }
 
-
     @Test
-    void getActiveProgramStructureNotStarted() throws Exception{
-        UUID clientId = UUID.randomUUID();
-
-        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/current-program", clientId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-
-    @Test
-    void getActiveExecutionStructure() throws Exception {
+    void OpenNotStartedProgram() throws Exception{
         UUID clientId = UUID.randomUUID();
 
         var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
 
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
-        var ai1 = testDataTx.saveActionItem(testDataGenerator.generateAI(ActionItemType.TEXT, 1, "", "", task1.getId()));
-        testDataTx.saveActionItem(testDataGenerator.generateAI(ActionItemType.PICTURE, 2, "", "", task1.getId()));
-
-        progressService.assignProgram(clientId, program.getId());
-
-        var taskExe = progressService.startTaskExecution(clientId, task1.getId());
-
-        progressService.executeItem(new ExecutedItemRequest(taskExe.getId(), "", null, ActionItemType.FREE_TEXT_QUESTION),clientId, ai1.getId());
+        testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
 
 
-        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/task-exe/{taskExecutionId}", clientId, taskExe.getId())
+
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/client/{clientId}/programs/{programId}", clientId, program.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.itemExecutions[0].lifecycleStatus").value(ExecutionStatus.FINISHED.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.itemExecutions[1].lifecycleStatus").isEmpty());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.NEW.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isEmpty());
+
     }
-
-
-
-    @Test
-    void getAllPrograms() throws Exception {
-
-        for(int i=0; i<30; i++)
-            testDataTx.saveProgram(testDataGenerator.generateProgram());
-
-
-
-        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/programs")
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value("30"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.pageable.pageSize").value("20"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value("20"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.last").value(false));
-    }
-
 
 }
