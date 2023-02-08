@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public interface TaskExecutionRepository extends JpaRepository<TaskExecution, UUID>, JpaSpecificationExecutor<TaskExecution>{
 
-    @EntityGraph(value = "including-tasks-and-item-executions")
+    @EntityGraph(value = "task-exe-including-tasks-and-item-executions")
     @Query(value = "SELECT exe FROM TaskExecution exe WHERE exe.id = ?1")
     Optional<TaskExecutionWithItemsProjection> selectByExeId(UUID exeId);
 

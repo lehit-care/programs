@@ -5,6 +5,7 @@ import com.lehit.programs.model.ItemExecution;
 import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.TaskExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
+import com.lehit.programs.model.projection.ProgramExecutionBasicProjection;
 import com.lehit.programs.model.projection.TaskExecutionWithItemsProjection;
 import com.lehit.programs.repository.ItemExecutionRepository;
 import com.lehit.programs.repository.ProgramExecutionRepository;
@@ -12,6 +13,7 @@ import com.lehit.programs.repository.TaskExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.lehit.common.enums.ExecutionStatus.NEW;
-import static com.lehit.common.enums.ExecutionStatus.STARTED;
+import static com.lehit.common.enums.ExecutionStatus.*;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -61,6 +62,26 @@ public class ExecutionProgressService {
 
 
     @Transactional
+    public ProgramExecution finishProgramExecution(UUID userId, UUID executionId){
+        return changeProgramExecutionLCS(userId, executionId, FINISHED);
+    }
+
+    @Transactional
+    public ProgramExecution cancelProgramExecution(UUID userId, UUID executionId){
+        return changeProgramExecutionLCS(userId, executionId, CANCELLED);
+    }
+
+    private ProgramExecution changeProgramExecutionLCS(UUID userId, UUID executionId, ExecutionStatus lcs){
+        ProgramExecution execution = programExecutionRepository.findById(executionId).orElseThrow();
+        Asserts.check(userId.equals(execution.getUserId()), "Not allowed.");
+
+        execution.setFinishedAt(LocalDateTime.now());
+        execution.setLifecycleStatus(lcs);
+        return execution;
+    }
+
+
+    @Transactional
     public TaskExecution startTaskExecution(UUID userId, UUID taskId){
         var exe = taskExecutionRepository.findByUserIdAndTaskId(userId, taskId);
 
@@ -89,7 +110,7 @@ public class ExecutionProgressService {
         Asserts.check(userId.equals(execution.getUserId()), "Not allowed.");
 
         execution.setFinishedAt(LocalDateTime.now());
-        execution.setLifecycleStatus(ExecutionStatus.FINISHED);
+        execution.setLifecycleStatus(FINISHED);
         return execution;
     }
 
@@ -100,7 +121,7 @@ public class ExecutionProgressService {
 
         Asserts.check(userId.equals(plannedExe.getUserId()), "Not allowed.");
 
-        plannedExe.setLifecycleStatus(ExecutionStatus.FINISHED);
+        plannedExe.setLifecycleStatus(FINISHED);
         plannedExe.setItemType(rel.itemType());
         return plannedExe;
     }
@@ -112,6 +133,14 @@ public class ExecutionProgressService {
 
     public Optional<ProgramExecution> getByClientAndProgram(UUID userId, UUID programId){
         return programExecutionRepository.findByUserIdAndProgramId(userId, programId);
+    }
+
+    public Slice<ProgramExecutionBasicProjection> getByClientAndLCS(UUID userId, ExecutionStatus lcs){
+        return programExecutionRepository.findByUserIdAndLifecycleStatus(userId, lcs);
+    }
+
+    public Slice<ProgramExecutionBasicProjection> getByClient(UUID userId){
+        return programExecutionRepository.findByUserId(userId);
     }
 
     public TaskExecutionWithItemsProjection getTaskExecutionData(UUID userId, UUID taskExecutionId){

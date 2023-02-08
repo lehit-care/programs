@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @NamedEntityGraph(
-        name = "including-programs-tasks-executions",
+        name = "base-exe-including-programs-tasks-executions",
         attributeNodes = {
                 @NamedAttributeNode(value = "taskExecutions", subgraph = "executions-subgraph"),
                 @NamedAttributeNode(value = "program")
@@ -24,6 +24,14 @@ import java.util.UUID;
                                 @NamedAttributeNode("task")
                         }
                 )
+        }
+)
+
+
+@NamedEntityGraph(
+        name = "base-exe-including-program",
+        attributeNodes = {
+                @NamedAttributeNode(value = "program")
         }
 )
 

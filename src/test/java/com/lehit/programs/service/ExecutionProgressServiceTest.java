@@ -10,8 +10,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 @SpringBootTest
 @Slf4j
 @ActiveProfiles("test")

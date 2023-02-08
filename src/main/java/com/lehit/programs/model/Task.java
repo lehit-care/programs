@@ -11,14 +11,14 @@ import java.util.UUID;
 
 
 @NamedEntityGraph(
-        name = "including-program",
+        name = "task-including-program",
         attributeNodes = {
                 @NamedAttributeNode(value = "program")
         }
 )
 
 @NamedEntityGraph(
-        name = "including-items",
+        name = "task-including-items",
         attributeNodes = {
                 @NamedAttributeNode(value = "actionItems")
         }

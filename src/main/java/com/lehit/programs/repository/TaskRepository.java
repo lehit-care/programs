@@ -16,18 +16,14 @@ import java.util.UUID;
 
 public interface TaskRepository extends JpaRepository<Task, UUID>, JpaSpecificationExecutor<Task>{
 
-    Optional<Task> findByProgramIdAndPosition(UUID programId, int position);
-
-    List<Task> findByProgramId(UUID programId);
-
     @Query(value = "SELECT t.id FROM Task t WHERE program.id = ?1")
     List<UUID> selectIdsByProgramId(UUID programId);
 
-    @EntityGraph(value = "including-items")
+    @EntityGraph(value = "task-including-items")
     @Query(value = "SELECT t.id FROM Task t WHERE program.id = ?1")
     Slice<TaskWithItemsProjection> selectTasksWithItemsByProgramId(UUID programId, Pageable pageable);
 
-    @EntityGraph(value = "including-program")
+    @EntityGraph(value = "task-including-program")
     @Query(value = "SELECT t FROM Task t WHERE t.id = ?1")
     Optional<Task> selectFullTask(UUID id);
 

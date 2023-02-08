@@ -18,7 +18,7 @@ public interface ProgramRepository extends CrudRepository<Program, UUID>, JpaSpe
 
     Slice<Program> findByAuthor(UUID authorId, Pageable pageable);
 
-    @EntityGraph(value = "including-tasks")
+    @EntityGraph(value = "program-including-tasks")
     @Query(value = "SELECT p FROM Program p WHERE p.id = ?1")
     Optional<ProgramWithTasksProjection> selectProgramWithTasks(UUID id);
 
