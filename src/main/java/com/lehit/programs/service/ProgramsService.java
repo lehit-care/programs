@@ -64,5 +64,9 @@ public class ProgramsService {
         return programRepository.findByAuthor(authorId, pageable);
     }
 
+    public Slice<Program> searchByTitle(String title, Pageable pageable){
+        return programRepository.findByTitleContainingIgnoreCase(title, pageable);
+    }
+
 
 }

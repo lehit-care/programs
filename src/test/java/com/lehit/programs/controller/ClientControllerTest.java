@@ -98,4 +98,24 @@ class ClientControllerTest {
 
     }
 
+
+    @Test
+    void searchProgramsByTitle() throws Exception{
+        String titleBase = UUID.randomUUID().toString();
+        var program1 = testDataTx.saveProgram(testDataGenerator.generateProgram(titleBase));
+        var program2 = testDataTx.saveProgram(testDataGenerator.generateProgram(titleBase+"srferf"));
+        var program3 = testDataTx.saveProgram(testDataGenerator.generateProgram("dsrkjvcndk "+titleBase));
+        var program4 = testDataTx.saveProgram(testDataGenerator.generateProgram("dsrkjvcndk "+titleBase+"srferf"));
+
+        var programNotMatching = testDataTx.saveProgram(testDataGenerator.generateProgram(UUID.randomUUID().toString()));
+
+
+
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/client/programs/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .queryParam("title", titleBase))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value("4"));
+    }
+
 }

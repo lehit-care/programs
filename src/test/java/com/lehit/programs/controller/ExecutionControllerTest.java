@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,7 +58,6 @@ class ExecutionControllerTest {
         testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
 
 
-
         this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -77,8 +77,8 @@ class ExecutionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
-
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.taskExecutions", hasSize(2)));
     }
 
 

@@ -1,15 +1,16 @@
 package com.lehit.programs.controller;
 
 import com.lehit.common.enums.ExecutionStatus;
+import com.lehit.programs.model.Program;
 import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.service.ExecutionProgressService;
 import com.lehit.programs.service.ProgramsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -32,6 +33,12 @@ public class ClientController {
                         .lifecycleStatus(ExecutionStatus.NEW)
                         .program(programsService.findById(programId).orElseThrow())
                         .build());
+    }
+
+
+    @GetMapping("/client/programs/search")
+    public Slice<Program> searchByTitle(@RequestParam String title, @ParameterObject Pageable pageable){
+        return programsService.searchByTitle(title, pageable);
     }
 
 
