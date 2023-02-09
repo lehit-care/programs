@@ -13,7 +13,9 @@ import com.lehit.programs.repository.TaskExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -126,9 +128,12 @@ public class ExecutionProgressService {
         return plannedExe;
     }
 
+
+    //    using direct query limitation limits the number of tasks executions as it fetches the join table
     public Optional<ProgramExecution> getActiveProgramExecutionData(UUID userId){
-//        return programExecutionRepository.findByUserIdAndLifecycleStatus(userId, STARTED);
-        return programExecutionRepository.findTop1ByUserIdAndLifecycleStatusOrderByStartedAtDesc(userId, STARTED);
+        return programExecutionRepository
+                .findByUserIdAndLifecycleStatus(userId, STARTED,  PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "startedAt")))
+                .stream().findFirst();
     }
 
     public Optional<ProgramExecution> getByClientAndProgram(UUID userId, UUID programId){
