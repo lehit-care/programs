@@ -17,6 +17,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -100,14 +102,14 @@ class ClientControllerTest {
 
 
     @Test
-    void searchProgramsByTitle() throws Exception{
+    void searchPrograms() throws Exception{
         String titleBase = UUID.randomUUID().toString();
         var program1 = testDataTx.saveProgram(testDataGenerator.generateProgram(titleBase));
         var program2 = testDataTx.saveProgram(testDataGenerator.generateProgram(titleBase+"srferf"));
         var program3 = testDataTx.saveProgram(testDataGenerator.generateProgram("dsrkjvcndk "+titleBase));
         var program4 = testDataTx.saveProgram(testDataGenerator.generateProgram("dsrkjvcndk "+titleBase+"srferf"));
 
-        var programNotMatching = testDataTx.saveProgram(testDataGenerator.generateProgram(UUID.randomUUID().toString()));
+        var programNotMatchingTitle = testDataTx.saveProgram(testDataGenerator.generateProgram(UUID.randomUUID().toString()));
 
 
 
@@ -116,6 +118,17 @@ class ClientControllerTest {
                         .queryParam("title", titleBase))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value("4"));
+
+
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/client/programs/search")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.content", hasSize(2)));
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.content", hasItem(programNotMatchingTitle.getId().toString())));
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").ofType[Int].greaterThan(5).value("5"));
+
+
+
     }
 
 }

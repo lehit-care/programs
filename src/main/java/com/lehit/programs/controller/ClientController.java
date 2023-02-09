@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -37,8 +38,9 @@ public class ClientController {
 
 
     @GetMapping("/client/programs/search")
-    public Slice<Program> searchByTitle(@RequestParam String title, @ParameterObject Pageable pageable){
-        return programsService.searchByTitle(title, pageable);
+    public Slice<Program> searchPrograms(@RequestParam(required = false) Optional<String> title, @ParameterObject Pageable pageable){
+        return title.map(t -> programsService.searchByTitle(t, pageable))
+                .orElseGet(() -> programsService.findAll(pageable));
     }
 
 
