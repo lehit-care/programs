@@ -69,6 +69,7 @@ public class ProgramExecution {
     private ExecutionStatus lifecycleStatus;
 
     @OneToMany(mappedBy = "programExecution", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OrderBy("createdAt")
     private List<TaskExecution> taskExecutions;
 
     @OneToOne(fetch = FetchType.LAZY)

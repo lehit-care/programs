@@ -80,6 +80,34 @@ class ClientControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
     }
 
+
+    @Test
+    void OpenStartedProgramCheckTasksOrder() throws Exception{
+        UUID clientId = UUID.randomUUID();
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+
+        var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
+        var task2 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
+
+
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
+
+
+
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/client/{clientId}/programs/{programId}", clientId, program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.taskExecutions[0].taskId").value(task1.getId().toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.taskExecutions[1].taskId").value(task2.getId().toString()));
+    }
+
     @Test
     void OpenNotStartedProgram() throws Exception{
         UUID clientId = UUID.randomUUID();

@@ -2,6 +2,7 @@ package com.lehit.programs.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lehit.common.enums.ExecutionStatus;
+import com.lehit.programs.model.audit.Auditable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,8 +38,7 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor @AllArgsConstructor
 @Builder @ToString
-public class TaskExecution {
-//     userId-TaskId - unique -- what if cancelled?
+public class TaskExecution extends Auditable {
 
     @Schema(hidden = true)
     @Id
@@ -78,7 +78,7 @@ public class TaskExecution {
 
 
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", insertable = false, updatable = false)
     private Task task;
 
