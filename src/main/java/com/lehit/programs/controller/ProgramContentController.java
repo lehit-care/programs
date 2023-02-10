@@ -99,8 +99,8 @@ public class ProgramContentController {
     }
 
     @PatchMapping("/author/{authorId}/tasks/{id}")
-    public Task updateTaskBasicData(@PathVariable UUID authorId, @PathVariable UUID programId,  @RequestBody Map<String, Object> payload) {
-        return tasksService.updateTask(authorId, programId, payload);
+    public Task updateTaskBasicData(@PathVariable UUID authorId, @PathVariable UUID id,  @RequestBody Map<String, Object> payload) {
+        return tasksService.updateTask(authorId, id, payload);
     }
 
 //    @ResponseStatus(HttpStatus.NO_CONTENT)
