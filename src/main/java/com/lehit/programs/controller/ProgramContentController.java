@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.lehit.programs.model.enums.ContentVisibilityStatus.ARCHIVED;
+import static com.lehit.programs.model.enums.ContentVisibilityStatus.PUBLISHED;
+
 @RestController
 @RequestMapping("/api/v1")
 @Slf4j
@@ -42,6 +45,16 @@ public class ProgramContentController {
     @PatchMapping("/author/{authorId}/programs/{programId}")
     public Program updateProgramBasicData(@PathVariable UUID authorId, @PathVariable UUID programId,  @RequestBody Map<String, Object> programPayload) {
         return programsService.updateProgramData(authorId, programId, programPayload);
+    }
+
+    @PostMapping("/author/{authorId}/programs/{programId}/publish")
+    public Program publishProgram(@PathVariable UUID authorId, @PathVariable UUID programId) {
+        return programsService.changeProgramVisibilityStatus(authorId, programId, PUBLISHED);
+    }
+
+    @PostMapping("/author/{authorId}/programs/{programId}/archive")
+    public Program archiveProgram(@PathVariable UUID authorId, @PathVariable UUID programId) {
+        return programsService.changeProgramVisibilityStatus(authorId, programId, ARCHIVED);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

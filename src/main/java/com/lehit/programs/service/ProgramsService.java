@@ -1,6 +1,7 @@
 package com.lehit.programs.service;
 
 import com.lehit.programs.model.Program;
+import com.lehit.programs.model.enums.ContentVisibilityStatus;
 import com.lehit.programs.model.projection.ProgramWithTasksProjection;
 import com.lehit.programs.repository.ProgramRepository;
 import com.lehit.programs.service.utils.BeanUtils;
@@ -27,6 +28,15 @@ public class ProgramsService {
     @Transactional
     public Program saveProgram(Program program){
         return programRepository.save(program);
+    }
+
+    @Transactional
+    public Program changeProgramVisibilityStatus(UUID authorId, UUID programId, ContentVisibilityStatus status){
+        var program = programRepository.findById(programId).orElseThrow();
+        Asserts.check(authorId.equals(program.getAuthor()), "Only Author can modify the Program.");
+
+        program.setVisibilityStatus(status);
+        return program;
     }
 
     @Transactional

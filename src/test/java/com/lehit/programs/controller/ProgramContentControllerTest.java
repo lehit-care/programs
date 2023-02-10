@@ -20,8 +20,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static com.lehit.programs.model.enums.ContentVisibilityStatus.ARCHIVED;
+import static com.lehit.programs.model.enums.ContentVisibilityStatus.PUBLISHED;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -125,6 +126,32 @@ class ProgramContentControllerTest {
                 .content(serialize(Map.of("description", updatedDesc))))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(updatedDesc));
+    }
+
+
+    @Test
+    void changeProgramStatus() throws Exception {
+        var authorId = UUID.randomUUID();
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}/publish", authorId, program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.visibilityStatus").value(PUBLISHED.toString()));
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}/archive", authorId, program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.visibilityStatus").value(ARCHIVED.toString()));
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}/publish", UUID.randomUUID(), program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}/archive", UUID.randomUUID(), program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
