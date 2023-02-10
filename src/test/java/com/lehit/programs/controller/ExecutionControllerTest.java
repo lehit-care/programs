@@ -81,6 +81,54 @@ class ExecutionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.taskExecutions", hasSize(2)));
     }
 
+    @Test
+    void startTheSameProgramTwice() throws Exception{
+        UUID clientId = UUID.randomUUID();
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    void startTheSameTaskTwice() throws Exception{
+        UUID clientId = UUID.randomUUID();
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+
+        var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
+
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-task/{taskId}", clientId, task1.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
+
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-task/{taskId}", clientId, task1.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
 
     @Test
     void getActiveProgramStructureNotStarted() throws Exception{

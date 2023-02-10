@@ -48,6 +48,7 @@ public class Program implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private UUID author;
 
     @JsonIgnore

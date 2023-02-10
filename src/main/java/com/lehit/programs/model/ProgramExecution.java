@@ -37,6 +37,9 @@ import java.util.UUID;
 
 
 @Entity
+@Table(uniqueConstraints={
+        @UniqueConstraint(columnNames = {"user_id", "program_id", "lifecycle_status"})
+})
 @Getter @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor @AllArgsConstructor
@@ -52,6 +55,7 @@ public class ProgramExecution {
     @ToString.Include
     private UUID id;
 
+    @Column(name = "user_id")
     private UUID userId;
 
 
@@ -61,6 +65,7 @@ public class ProgramExecution {
     @DateTimeFormat(iso= DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime finishedAt;
 
+    @Column(name = "lifecycle_status")
     private ExecutionStatus lifecycleStatus;
 
     @OneToMany(mappedBy = "programExecution", fetch = FetchType.LAZY, orphanRemoval = true)
