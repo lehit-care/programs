@@ -168,6 +168,35 @@ class ProgramContentControllerTest {
     }
 
 
+    @Test
+    void deleteProgramByAuthor() throws Exception {
+        var authorId = UUID.randomUUID();
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        var task = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
+        var task2 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
+
+        for(int i =0; i<10; i++){
+            testDataTx.saveActionItem(testDataGenerator.generateAI(ActionItemType.TEXT, i, "", "", task.getId()));
+            testDataTx.saveActionItem(testDataGenerator.generateAI(ActionItemType.VIDEO, i, "", "", task2.getId()));
+        }
+
+
+        this.mockMvc.perform(delete(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", authorId, program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+
+    @Test
+    void deleteProgramFraud() throws Exception {
+        var authorId = UUID.randomUUID();
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        this.mockMvc.perform(delete(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", UUID.randomUUID(), program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+
     protected String serialize(Object entity) throws JsonProcessingException {
         ObjectMapper o = new ObjectMapper();
         return o.writeValueAsString(entity);

@@ -2,6 +2,7 @@ package com.lehit.programs.data;
 
 import com.lehit.programs.model.*;
 import com.lehit.programs.model.enums.ActionItemType;
+import com.lehit.programs.model.enums.ContentVisibilityStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +64,7 @@ public class TestDataGenerator {
                 .description("test")
                 .title("test")
                 .author(authorId)
+                .visibilityStatus(ContentVisibilityStatus.DRAFT)
                 .build();
     }
 

@@ -39,7 +39,7 @@ public class ProgramContentController {
     @PostMapping("/author/{authorId}/programs")
     public Program createProgram(@PathVariable UUID authorId, @Valid @RequestBody Program program) {
         program.setAuthor(authorId);
-        return programsService.saveProgram(program);
+        return programsService.saveNewProgram(program);
     }
 
     @PatchMapping("/author/{authorId}/programs/{programId}")

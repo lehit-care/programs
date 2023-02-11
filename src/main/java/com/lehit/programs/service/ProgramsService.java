@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.lehit.programs.model.enums.ContentVisibilityStatus.DRAFT;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -26,7 +28,8 @@ public class ProgramsService {
     private final BeanUtils beanUtils;
 
     @Transactional
-    public Program saveProgram(Program program){
+    public Program saveNewProgram(Program program){
+        program.setVisibilityStatus(DRAFT);
         return programRepository.save(program);
     }
 
@@ -62,6 +65,7 @@ public class ProgramsService {
     public void deleteProgram(UUID authorId, UUID programId){
         var program = programRepository.findById(programId).orElseThrow();
         Asserts.check(authorId.equals(program.getAuthor()), "Only Author can delete the Program.");
+        Asserts.check(DRAFT.equals(program.getVisibilityStatus()), "Only Draft Programs can be deleted.");
         programRepository.delete(program);
     }
 
