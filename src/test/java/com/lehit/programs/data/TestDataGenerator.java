@@ -59,6 +59,14 @@ public class TestDataGenerator {
                 .build();
     }
 
+    public Program generateProgram(UUID authorId, String title){
+        return Program.builder()
+                .description("test")
+                .title(title)
+                .author(authorId)
+                .build();
+    }
+
     public Program generateProgram(UUID authorId){
         return Program.builder()
                 .description("test")

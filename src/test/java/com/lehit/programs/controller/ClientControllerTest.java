@@ -3,7 +3,9 @@ package com.lehit.programs.controller;
 import com.lehit.common.enums.ExecutionStatus;
 import com.lehit.programs.data.TestDataGenerator;
 import com.lehit.programs.data.TestDataTx;
+import com.lehit.programs.model.enums.ContentVisibilityStatus;
 import com.lehit.programs.service.ExecutionProgressService;
+import com.lehit.programs.service.ProgramsService;
 import com.lehit.programs.service.TasksService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -15,10 +17,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +36,8 @@ class ClientControllerTest {
     private TestDataGenerator testDataGenerator;
     @Autowired
     private TasksService tasksService;
+    @Autowired
+    private ProgramsService programsService;
 
 
     @Autowired
@@ -132,13 +135,24 @@ class ClientControllerTest {
     @Test
     void searchPrograms() throws Exception{
         String titleBase = UUID.randomUUID().toString();
-        var program1 = testDataTx.saveProgram(testDataGenerator.generateProgram(titleBase));
-        var program2 = testDataTx.saveProgram(testDataGenerator.generateProgram(titleBase+"srferf"));
-        var program3 = testDataTx.saveProgram(testDataGenerator.generateProgram("dsrkjvcndk "+titleBase));
-        var program4 = testDataTx.saveProgram(testDataGenerator.generateProgram("dsrkjvcndk "+titleBase+"srferf"));
+        UUID author = UUID.randomUUID();
+        var program1 = testDataTx.saveProgram(testDataGenerator.generateProgram(author, titleBase));
+        var program2 = testDataTx.saveProgram(testDataGenerator.generateProgram(author, titleBase+"srferf"));
+        var program3 = testDataTx.saveProgram(testDataGenerator.generateProgram(author,"dsrkjvcndk "+titleBase));
+        var program4 = testDataTx.saveProgram(testDataGenerator.generateProgram(author,"dsrkjvcndk "+titleBase+"srferf"));
 
         var programNotMatchingTitle = testDataTx.saveProgram(testDataGenerator.generateProgram(UUID.randomUUID().toString()));
 
+
+
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/client/programs/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .queryParam("title", titleBase))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value("0"));
+
+        List.of(program1, program2, program3, program4)
+                .forEach(program ->  programsService.changeProgramVisibilityStatus(author, program.getId(), ContentVisibilityStatus.PUBLISHED));
 
 
         this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/client/programs/search")

@@ -40,7 +40,7 @@ public class ClientController {
     @GetMapping("/client/programs/search")
     public Slice<Program> searchPrograms(@RequestParam(required = false) Optional<String> title, @ParameterObject Pageable pageable){
         return title.map(t -> programsService.searchByTitle(t, pageable))
-                .orElseGet(() -> programsService.findAll(pageable));
+                .orElseGet(() -> programsService.findPublished(pageable));
     }
 
 

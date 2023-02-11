@@ -2,6 +2,7 @@ package com.lehit.programs.repository;
 
 
 import com.lehit.programs.model.Program;
+import com.lehit.programs.model.enums.ContentVisibilityStatus;
 import com.lehit.programs.model.projection.ProgramWithTasksProjection;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,7 +19,9 @@ public interface ProgramRepository extends CrudRepository<Program, UUID>, JpaSpe
 
     Slice<Program> findByAuthor(UUID authorId, Pageable pageable);
 
-    Slice<Program> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    Slice<Program> findByVisibilityStatusAndTitleContainingIgnoreCase(ContentVisibilityStatus status, String title, Pageable pageable);
+
+    Slice<Program> findByVisibilityStatus(ContentVisibilityStatus status, Pageable pageable);
 
     @EntityGraph(value = "program-including-tasks")
     @Query(value = "SELECT p FROM Program p WHERE p.id = ?1")

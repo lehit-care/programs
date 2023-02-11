@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.lehit.programs.model.enums.ContentVisibilityStatus.DRAFT;
+import static com.lehit.programs.model.enums.ContentVisibilityStatus.PUBLISHED;
 
 @Service
 @RequiredArgsConstructor
@@ -79,8 +80,11 @@ public class ProgramsService {
     }
 
     public Slice<Program> searchByTitle(String title, Pageable pageable){
-        return programRepository.findByTitleContainingIgnoreCase(title, pageable);
+        return programRepository.findByVisibilityStatusAndTitleContainingIgnoreCase(PUBLISHED, title, pageable);
     }
 
+    public Slice<Program> findPublished(Pageable pageable){
+        return programRepository.findByVisibilityStatus(PUBLISHED, pageable);
+    }
 
 }
