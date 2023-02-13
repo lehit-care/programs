@@ -48,13 +48,20 @@ public class Program implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private UUID author;
 
     @JsonIgnore
     @OneToMany(mappedBy = "program", orphanRemoval = true)
     @OrderBy("position")
     private List<Task> tasks;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", insertable = false, updatable = false)
+    private Author author;
+
+    @Column(name = "author_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private UUID authorId;
 
     public ContentVisibilityStatus visibilityStatus;
 }

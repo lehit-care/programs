@@ -6,7 +6,6 @@ import com.lehit.programs.model.enums.ContentVisibilityStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -34,36 +33,13 @@ public class TestDataGenerator {
                 .build();
     }
 
-    public Task generateDummyTask(){
-        return Task.builder()
-                .avatarUrl("testAvatar")
-                .build();
-    }
 
-
-
-    public Program generateProgram(){
-        return Program.builder()
-                .description("test")
-                .title("test")
-                .author(UUID.randomUUID())
-                .build();
-    }
-
-
-    public Program generateProgram(String title){
-        return Program.builder()
-                .description("test")
-                .title(title)
-                .author(UUID.randomUUID())
-                .build();
-    }
 
     public Program generateProgram(UUID authorId, String title){
         return Program.builder()
                 .description("test")
                 .title(title)
-                .author(authorId)
+                .authorId(authorId)
                 .build();
     }
 
@@ -71,14 +47,17 @@ public class TestDataGenerator {
         return Program.builder()
                 .description("test")
                 .title("test")
-                .author(authorId)
+                .authorId(authorId)
                 .visibilityStatus(ContentVisibilityStatus.DRAFT)
                 .build();
     }
 
-    public int generateRandomStep(){
-       return new Random().nextInt() & Integer.MAX_VALUE;
+    public Author generateAuthor(){
+        return Author.builder()
+                .id(UUID.randomUUID())
+                .firstName("name"+UUID.randomUUID())
+                .lastName("ln"+UUID.randomUUID())
+                .build();
     }
-
 
 }

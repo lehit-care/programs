@@ -54,7 +54,9 @@ class ClientControllerTest {
     void OpenStartedProgram() throws Exception{
         UUID clientId = UUID.randomUUID();
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
         testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
@@ -88,7 +90,9 @@ class ClientControllerTest {
     void OpenStartedProgramCheckTasksOrder() throws Exception{
         UUID clientId = UUID.randomUUID();
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
         var task2 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
@@ -115,7 +119,9 @@ class ClientControllerTest {
     void OpenNotStartedProgram() throws Exception{
         UUID clientId = UUID.randomUUID();
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
         testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
@@ -135,13 +141,14 @@ class ClientControllerTest {
     @Test
     void searchPrograms() throws Exception{
         String titleBase = UUID.randomUUID().toString();
-        UUID author = UUID.randomUUID();
-        var program1 = testDataTx.saveProgram(testDataGenerator.generateProgram(author, titleBase));
-        var program2 = testDataTx.saveProgram(testDataGenerator.generateProgram(author, titleBase+"srferf"));
-        var program3 = testDataTx.saveProgram(testDataGenerator.generateProgram(author,"dsrkjvcndk "+titleBase));
-        var program4 = testDataTx.saveProgram(testDataGenerator.generateProgram(author,"dsrkjvcndk "+titleBase+"srferf"));
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
 
-        var programNotMatchingTitle = testDataTx.saveProgram(testDataGenerator.generateProgram(UUID.randomUUID().toString()));
+        var program1 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId(), titleBase));
+        var program2 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId(), titleBase+"srferf"));
+        var program3 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId(),"dsrkjvcndk "+titleBase));
+        var program4 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId(),"dsrkjvcndk "+titleBase+"srferf"));
+
+        var programNotMatchingTitle = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId(), UUID.randomUUID().toString()));
 
 
 
@@ -152,7 +159,7 @@ class ClientControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value("0"));
 
         List.of(program1, program2, program3, program4)
-                .forEach(program ->  programsService.changeProgramVisibilityStatus(author, program.getId(), ContentVisibilityStatus.PUBLISHED));
+                .forEach(program ->  programsService.changeProgramVisibilityStatus(author.getId(), program.getId(), ContentVisibilityStatus.PUBLISHED));
 
 
         this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/client/programs/search")

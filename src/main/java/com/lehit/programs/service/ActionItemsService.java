@@ -49,7 +49,7 @@ public class ActionItemsService {
     @Transactional
     public ActionItem save(UUID authorId, ActionItem ai){
         var task = taskRepository.selectFullTask(ai.getTaskId()).orElseThrow();
-        Asserts.check(authorId.equals(task.getProgram().getAuthor()), "Not allowed.");
+        Asserts.check(authorId.equals(task.getProgram().getAuthorId()), "Not allowed.");
 
         return itemRepository.save(ai);
     }
@@ -59,7 +59,7 @@ public class ActionItemsService {
         var item = itemRepository.findById(aiId).orElseThrow();
         var task = taskRepository.selectFullTask(item.getTaskId()).orElseThrow();
 
-        Asserts.check(authorId.equals(task.getProgram().getAuthor()), "Not allowed.");
+        Asserts.check(authorId.equals(task.getProgram().getAuthorId()), "Not allowed.");
         beanUtils.updateFields(fields, item);
 
         item.setId(aiId);
@@ -80,7 +80,7 @@ public class ActionItemsService {
         var item = itemRepository.findById(itemId).orElseThrow();
         var task = taskRepository.selectFullTask(item.getTaskId()).orElseThrow();
 
-        Asserts.check(authorId.equals(task.getProgram().getAuthor()), "Not allowed.");
+        Asserts.check(authorId.equals(task.getProgram().getAuthorId()), "Not allowed.");
 
 //        var informationItem = item.getInformationItem();
 

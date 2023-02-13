@@ -33,23 +33,23 @@ public class TaskServiceTest {
 
     @Test
     void deleteTaskByAuthor() {
-        UUID authorId = UUID.randomUUID();
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
         var task = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
 
         testDataTx.saveActionItem(testDataGenerator.generateAI(ActionItemType.TEXT, 1, "", "", task.getId()));
 
-        taskService.deleteTask(authorId, task.getId());
+        taskService.deleteTask(author.getId(), task.getId());
     }
 
 
     @Test
     void deleteTaskByFraud() {
-        UUID authorId = UUID.randomUUID();
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
         var task = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
 

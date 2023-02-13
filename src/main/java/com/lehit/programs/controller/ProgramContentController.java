@@ -38,7 +38,7 @@ public class ProgramContentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/author/{authorId}/programs")
     public Program createProgram(@PathVariable UUID authorId, @Valid @RequestBody Program program) {
-        program.setAuthor(authorId);
+        program.setAuthorId(authorId);
         return programsService.saveNewProgram(program);
     }
 

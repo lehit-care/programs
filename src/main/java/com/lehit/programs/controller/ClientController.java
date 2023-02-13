@@ -1,8 +1,8 @@
 package com.lehit.programs.controller;
 
 import com.lehit.common.enums.ExecutionStatus;
-import com.lehit.programs.model.Program;
 import com.lehit.programs.model.ProgramExecution;
+import com.lehit.programs.model.projection.ProgramWithAuthorProjection;
 import com.lehit.programs.service.ExecutionProgressService;
 import com.lehit.programs.service.ProgramsService;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class ClientController {
 
 
     @GetMapping("/client/programs/search")
-    public Slice<Program> searchPrograms(@RequestParam(required = false) Optional<String> title, @ParameterObject Pageable pageable){
+    public Slice<ProgramWithAuthorProjection> searchPrograms(@RequestParam(required = false) Optional<String> title, @ParameterObject Pageable pageable){
         return title.map(t -> programsService.searchByTitle(t, pageable))
                 .orElseGet(() -> programsService.findPublished(pageable));
     }

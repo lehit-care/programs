@@ -31,7 +31,9 @@ public class ExecutionProgressServiceTest {
     void getActiveExecutionStructure() {
         UUID clientId = UUID.randomUUID();
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
         var task2 =  testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));

@@ -1,14 +1,12 @@
 package com.lehit.programs.model.projection;
 
 
-import com.lehit.programs.model.Task;
 import com.lehit.programs.model.enums.ContentVisibilityStatus;
 
-import java.util.List;
 import java.util.UUID;
 
 
-public interface ProgramWithTasksProjection {
+public interface ProgramWithAuthorProjection {
     UUID getId();
 
     String getTitle();
@@ -17,9 +15,7 @@ public interface ProgramWithTasksProjection {
 
     String getDescription();
 
-    UUID getAuthorId();
-
-    List<Task> getTasks();
+    AuthorSimpleDataProjection getAuthor();
 
     ContentVisibilityStatus getVisibilityStatus();
 

@@ -39,14 +39,14 @@ public class TasksService {
 
     @Transactional
     public Task save(UUID authorId, Task task){
-        Asserts.check(authorId.equals(programRepository.findById(task.getProgramId()).orElseThrow().getAuthor()), "Not allowed.");
+        Asserts.check(authorId.equals(programRepository.findById(task.getProgramId()).orElseThrow().getAuthorId()), "Not allowed.");
         return taskRepository.save(task);
     }
 
     @Transactional
     public Task updateTask(UUID authorId, UUID taskId, Map<String, Object> fields) {
         var task = taskRepository.selectFullTask(taskId).orElseThrow();
-        Asserts.check(authorId.equals(task.getProgram().getAuthor()), "Only Author can modify the Program.");
+        Asserts.check(authorId.equals(task.getProgram().getAuthorId()), "Only Author can modify the Program.");
 
         beanUtils.updateFields(fields, task);
         task.setId(taskId);
@@ -58,7 +58,7 @@ public class TasksService {
     public void deleteTask(UUID authorId, UUID taskId){
         var task = taskRepository.selectFullTask(taskId).orElseThrow();
 
-        Asserts.check(authorId.equals(task.getProgram().getAuthor()), "Not allowed.");
+        Asserts.check(authorId.equals(task.getProgram().getAuthorId()), "Not allowed.");
 
         taskRepository.delete(task);
 

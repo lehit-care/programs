@@ -53,14 +53,14 @@ class ProgramContentControllerTest {
     @Test
     void getProgramsByAuthor() throws Exception {
 
-        var authorId = UUID.randomUUID();
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
 
-        testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
-        testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
-        testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
 
-        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs", authorId)
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs", author.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .queryParam("page", "0"))
                 .andExpect(status().isOk())
@@ -73,9 +73,9 @@ class ProgramContentControllerTest {
     @Test
     void getProgramByAuthor() throws Exception {
 
-        var authorId = UUID.randomUUID();
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
         var task2 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
         var task3 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 3));
@@ -83,7 +83,7 @@ class ProgramContentControllerTest {
 
 
 
-        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{id}", authorId, program.getId())
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{id}", author.getId(), program.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(program.getId().toString()))
@@ -95,8 +95,10 @@ class ProgramContentControllerTest {
     @Test
     void getItemsByTask() throws Exception {
 
-        var authorId = UUID.randomUUID();
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+
         var task = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
 
         for(int i =0; i<10; i++){
@@ -114,14 +116,13 @@ class ProgramContentControllerTest {
     @Test
     void updateBasicProgramData() throws Exception {
 
-        var authorId = UUID.randomUUID();
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
-
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
         var updatedDesc = UUID.randomUUID().toString();
 
 
-        this.mockMvc.perform(patch(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", authorId, program.getId())
+        this.mockMvc.perform(patch(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", author.getId(), program.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(serialize(Map.of("description", updatedDesc))))
                 .andExpect(status().isOk())
@@ -131,16 +132,16 @@ class ProgramContentControllerTest {
 
     @Test
     void changeProgramStatus() throws Exception {
-        var authorId = UUID.randomUUID();
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
 
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
-        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}/publish", authorId, program.getId())
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}/publish", author.getId(), program.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.visibilityStatus").value(PUBLISHED.toString()));
 
-        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}/archive", authorId, program.getId())
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}/archive", author.getId(), program.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.visibilityStatus").value(ARCHIVED.toString()));
@@ -156,12 +157,13 @@ class ProgramContentControllerTest {
 
     @Test
     void updateBasicProgramDataNonExistingField() throws Exception {
-        var authorId = UUID.randomUUID();
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
         var updatedDesc = UUID.randomUUID().toString();
 
 
-        this.mockMvc.perform(patch(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", authorId, program.getId())
+        this.mockMvc.perform(patch(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", author.getId(), program.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(serialize(Map.of("description2", updatedDesc))))
                 .andExpect(status().isBadRequest());
@@ -170,8 +172,9 @@ class ProgramContentControllerTest {
 
     @Test
     void deleteProgramByAuthor() throws Exception {
-        var authorId = UUID.randomUUID();
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
         var task = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
         var task2 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
 
@@ -181,7 +184,7 @@ class ProgramContentControllerTest {
         }
 
 
-        this.mockMvc.perform(delete(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", authorId, program.getId())
+        this.mockMvc.perform(delete(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", author.getId(), program.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
@@ -189,8 +192,9 @@ class ProgramContentControllerTest {
 
     @Test
     void deleteProgramFraud() throws Exception {
-        var authorId = UUID.randomUUID();
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(authorId));
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
         this.mockMvc.perform(delete(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", UUID.randomUUID(), program.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());

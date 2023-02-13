@@ -2,6 +2,7 @@ package com.lehit.programs.service;
 
 import com.lehit.programs.model.Program;
 import com.lehit.programs.model.enums.ContentVisibilityStatus;
+import com.lehit.programs.model.projection.ProgramWithAuthorProjection;
 import com.lehit.programs.model.projection.ProgramWithTasksProjection;
 import com.lehit.programs.repository.ProgramRepository;
 import com.lehit.programs.service.utils.BeanUtils;
@@ -37,7 +38,7 @@ public class ProgramsService {
     @Transactional
     public Program changeProgramVisibilityStatus(UUID authorId, UUID programId, ContentVisibilityStatus status){
         var program = programRepository.findById(programId).orElseThrow();
-        Asserts.check(authorId.equals(program.getAuthor()), "Only Author can modify the Program.");
+        Asserts.check(authorId.equals(program.getAuthorId()), "Only Author can modify the Program.");
 
         program.setVisibilityStatus(status);
         return program;
@@ -46,7 +47,7 @@ public class ProgramsService {
     @Transactional
     public Program updateProgramData(UUID authorId, UUID programId, Map<String, Object> fields) {
         var program = programRepository.findById(programId).orElseThrow();
-        Asserts.check(authorId.equals(program.getAuthor()), "Only Author can modify the Program.");
+        Asserts.check(authorId.equals(program.getAuthorId()), "Only Author can modify the Program.");
 
         beanUtils.updateFields(fields, program);
         program.setId(programId);
@@ -65,7 +66,7 @@ public class ProgramsService {
     @Transactional
     public void deleteProgram(UUID authorId, UUID programId){
         var program = programRepository.findById(programId).orElseThrow();
-        Asserts.check(authorId.equals(program.getAuthor()), "Only Author can delete the Program.");
+        Asserts.check(authorId.equals(program.getAuthorId()), "Only Author can delete the Program.");
         Asserts.check(DRAFT.equals(program.getVisibilityStatus()), "Only Draft Programs can be deleted.");
         programRepository.delete(program);
     }
@@ -76,14 +77,14 @@ public class ProgramsService {
 
 
     public Slice<Program> findByAuthor(UUID authorId, Pageable pageable){
-        return programRepository.findByAuthor(authorId, pageable);
+        return programRepository.findByAuthorId(authorId, pageable);
     }
 
-    public Slice<Program> searchByTitle(String title, Pageable pageable){
+    public Slice<ProgramWithAuthorProjection> searchByTitle(String title, Pageable pageable){
         return programRepository.findByVisibilityStatusAndTitleContainingIgnoreCase(PUBLISHED, title, pageable);
     }
 
-    public Slice<Program> findPublished(Pageable pageable){
+    public Slice<ProgramWithAuthorProjection> findPublished(Pageable pageable){
         return programRepository.findByVisibilityStatus(PUBLISHED, pageable);
     }
 

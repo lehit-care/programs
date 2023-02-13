@@ -52,7 +52,9 @@ class ExecutionControllerTest {
     void getActiveProgramStructure() throws Exception{
         UUID clientId = UUID.randomUUID();
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
         testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
@@ -85,7 +87,9 @@ class ExecutionControllerTest {
     void startTheSameProgramTwice() throws Exception{
         UUID clientId = UUID.randomUUID();
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
         this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program.getId())
                         .contentType(MediaType.APPLICATION_JSON))
@@ -104,7 +108,9 @@ class ExecutionControllerTest {
     void startTheSameTaskTwice() throws Exception{
         UUID clientId = UUID.randomUUID();
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
 
@@ -144,7 +150,9 @@ class ExecutionControllerTest {
     void getActiveExecutionStructure() throws Exception {
         UUID clientId = UUID.randomUUID();
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
         var ai1 = testDataTx.saveActionItem(testDataGenerator.generateAI(ActionItemType.TEXT, 1, "", "", task1.getId()));
@@ -168,9 +176,10 @@ class ExecutionControllerTest {
 
     @Test
     void getAllPrograms() throws Exception {
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
 
         for(int i=0; i<30; i++)
-            testDataTx.saveProgram(testDataGenerator.generateProgram());
+            testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
 
 
@@ -190,9 +199,11 @@ class ExecutionControllerTest {
     void getUserActionedProgramsList() throws Exception{
         UUID clientId = UUID.randomUUID();
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram());
-        var program2 = testDataTx.saveProgram(testDataGenerator.generateProgram());
-        var program3 = testDataTx.saveProgram(testDataGenerator.generateProgram());
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var program2 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var program3 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
 
 
         this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program.getId())

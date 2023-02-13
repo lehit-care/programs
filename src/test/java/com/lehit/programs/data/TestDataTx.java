@@ -1,9 +1,6 @@
 package com.lehit.programs.data;
 
-import com.lehit.programs.model.ActionItem;
-import com.lehit.programs.model.Program;
-import com.lehit.programs.model.Task;
-import com.lehit.programs.model.TaskExecution;
+import com.lehit.programs.model.*;
 import com.lehit.programs.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +22,8 @@ public class TestDataTx {
     private TaskExecutionRepository taskExecutionRepository;
     @Autowired
     private ProgramRepository programRepository;
+    @Autowired
+    private AuthorRepository authorRepository;
 
 
     public Task saveTask(Task task){
@@ -45,6 +44,10 @@ public class TestDataTx {
 
     public Program saveProgram(Program program){
         return programRepository.save(program);
+    }
+
+    public Author saveAuthor(Author author){
+        return authorRepository.save(author);
     }
 
 }
