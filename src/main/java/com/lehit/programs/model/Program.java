@@ -21,6 +21,14 @@ import java.util.UUID;
         }
 )
 
+
+@NamedEntityGraph(
+        name = "program-including-author",
+        attributeNodes = {
+                @NamedAttributeNode(value = "author")
+        }
+)
+
 @Entity
 @Getter @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
