@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -134,6 +135,12 @@ public class ExecutionProgressService {
         return programExecutionRepository
                 .findByUserIdAndLifecycleStatus(userId, STARTED,  PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "startedAt")))
                 .stream().findFirst();
+    }
+
+
+    public Slice<ProgramExecution> getProgramExecutionData(UUID userId, ExecutionStatus lcs, Pageable pageable){
+        return programExecutionRepository
+                .findByUserIdAndLifecycleStatus(userId, lcs, pageable);
     }
 
     public Optional<ProgramExecution> getByClientAndProgram(UUID userId, UUID programId){

@@ -11,6 +11,8 @@ import com.lehit.programs.service.ActionItemsService;
 import com.lehit.programs.service.ExecutionProgressService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +62,11 @@ public class ExecutionController {
     @GetMapping("/executions/{clientId}/current-program")
     public ProgramExecution getCurrentProgramData(@PathVariable UUID clientId) {
         return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
+    }
+
+    @GetMapping("/executions/{clientId}/program-executions")
+    public Slice<ProgramExecution> getProgramExecutions(@PathVariable UUID clientId, @RequestParam ExecutionStatus lcs, @ParameterObject Pageable pageable) {
+        return executionService.getProgramExecutionData(clientId, lcs, pageable);
     }
 
     @GetMapping("/executions/{clientId}/task-exe/{taskExecutionId}")
