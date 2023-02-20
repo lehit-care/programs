@@ -141,7 +141,7 @@ public class ProgramContentController {
         itemsService.removeActionItem(authorId, id);
     }
 
-    @PatchMapping("/author/{authorId}/items/{id}")
+    @PatchMapping("/author/{authorId}/items/{aiId}")
     public ActionItem updateAIBasicData(@PathVariable UUID authorId, @PathVariable UUID aiId,  @RequestBody Map<String, Object> payload) {
         return itemsService.updateItem(authorId, aiId, payload);
     }

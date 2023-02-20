@@ -200,6 +200,28 @@ class ProgramContentControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void updateBasicItemData() throws Exception {
+
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var task = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
+
+
+        var ai = testDataTx.saveActionItem(testDataGenerator.generateAI(ActionItemType.TEXT, 1, "", "", task.getId()));
+
+
+        var updatedDesc = UUID.randomUUID().toString();
+
+
+        this.mockMvc.perform(patch(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/items/{id}", author.getId(), ai.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialize(Map.of("description", updatedDesc))))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(updatedDesc));
+    }
+
 
     protected String serialize(Object entity) throws JsonProcessingException {
         ObjectMapper o = new ObjectMapper();
