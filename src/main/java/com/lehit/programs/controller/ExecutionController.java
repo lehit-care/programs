@@ -17,6 +17,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -60,8 +61,10 @@ public class ExecutionController {
     }
 
     @GetMapping("/executions/{clientId}/current-program")
-    public ProgramExecution getCurrentProgramData(@PathVariable UUID clientId) {
-        return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
+    public List<ProgramExecution> getCurrentProgramData(@PathVariable UUID clientId) {
+//        return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
+        return executionService.getActiveProgramExecutionData1(clientId);
+//                .orElseThrow();
     }
 
     @GetMapping("/executions/{clientId}/program-executions")

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -135,6 +136,11 @@ public class ExecutionProgressService {
         return programExecutionRepository
                 .findByUserIdAndLifecycleStatus(userId, STARTED,  PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "startedAt")))
                 .stream().findFirst();
+    }
+
+    public List<ProgramExecution> getActiveProgramExecutionData1(UUID userId){
+        return programExecutionRepository
+                .findProgramExecutionsWithTaskExecutionsWithTasks(userId, 1);
     }
 
 

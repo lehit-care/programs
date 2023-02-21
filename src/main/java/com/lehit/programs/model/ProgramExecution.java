@@ -35,6 +35,115 @@ import java.util.UUID;
         }
 )
 
+@NamedNativeQuery(
+        name = "ProgramExecution.findProgramExecutionsWithTaskExecutionsWithTasks",
+        query =
+                """
+                               SELECT *
+                                                       FROM (
+                                                           SELECT
+                                                               *,
+                                                               DENSE_RANK() OVER (
+                                                                   ORDER BY "p_e.started_at"
+                                                               ) rank from(
+                                                                        select
+                                                                           p_e.id as "p_e.id",
+                                                                           p_e.finished_at as "p_e.finished_at",
+                                                                           p_e.lifecycle_status as "p_e.lifecycle_status",
+                                                                           program.id as "program.id",
+                                                                           program.author_id as "program.author_id",
+                                                                           program.avatar_url as "program.avatar_url",
+                                                                           program.description as "program.description",
+                                                                           program.title as "program.title",
+                                                                           program.visibility_status as "program.visibility_status",
+                                                                           p_e.program_id as "p_e.program_id",
+                                                                           p_e.started_at as "p_e.started_at",
+                                                                           t_e.program_execution as " t_e.program_execution",
+                                                                           t_e.id as "t_e.id",
+                                                                           t_e.created_at as "t_e.created_at",
+                                                                           t_e.finished_at as "t_e.finished_at",
+                                                                           t_e.lifecycle_status as "t_e.lifecycle_status",
+                                                                           t_e.started_at as "t_e.started_at",
+                                                                           task.id as " task.id",
+                                                                           task.avatar_url as "task.avatar_url",
+                                                                           task.description as "task.description",
+                                                                           task.position as "task.position",
+                                                                           task.program_id,
+                                                                           task.title as "task.title",
+                                                                           t_e.task_id,
+                                                                           p_e.user_id as "p_e.user_id"
+                                                                       from
+                                                                           program_execution p_e
+                                                                       left join
+                                                                           program program
+                                                                               on program.id=p_e.program_id
+                                                                       left join
+                                                                           task_execution t_e
+                                                                               on p_e.id=t_e.program_execution
+                                                                       left join
+                                                                           task task
+                                                                               on task.id=t_e.task_id
+                                                                       where
+                                                                           p_e.user_id= ?
+                                                                           and p_e.lifecycle_status=1
+                                                                       order by
+                                                                           p_e.started_at desc,
+                                                                           t_e.created_at  ) p_pc
+                                                                    ) p_pc_r WHERE p_pc_r.rank <=?                                                                                            
+                        """,
+        resultSetMapping = "ProgramExecutionsWithTaskExecutionsWithTasks"
+)
+@SqlResultSetMapping(
+        name = "ProgramExecutionsWithTaskExecutionsWithTasks",
+        entities = {
+                @EntityResult(
+                        entityClass = ProgramExecution.class,
+                        fields = {
+                                @FieldResult(name = "id", column = "p_e.id"),
+//                                @FieldResult(name = "createdAt", column = "p_e.created_at"),
+                                @FieldResult(name = "finishedAt", column = "p_e.finished_at"),
+                                @FieldResult(name = "startedAt", column = "p_e.started_at"),
+                                @FieldResult(name = "lifecycleStatus", column = "p_e.lifecycle_status"),
+                                @FieldResult(name = "program", column = "program.id"),
+                                @FieldResult(name = "userId", column = "p_e.user_id"),
+                        }
+                ),
+                @EntityResult(
+                        entityClass = Program.class,
+                        fields = {
+                                @FieldResult(name = "id", column = "program.id"),
+                                @FieldResult(name = "title", column = "program.title"),
+                                @FieldResult(name = "avatarUrl", column = "program.avatar_url"),
+                                @FieldResult(name = "description", column = "program.description"),
+                                @FieldResult(name = "authorId", column = "program.author_id"),
+                                @FieldResult(name = "visibilityStatus", column = "program.visibility_status")
+                        }
+                ),
+                @EntityResult(
+                        entityClass = TaskExecution.class,
+                        fields = {
+                                @FieldResult(name = "id", column = "t_e.id"),
+//                                @FieldResult(name = "createdAt", column = "t_e.created_at"),
+                                @FieldResult(name = "finishedAt", column = "t_e.finished_at"),
+                                @FieldResult(name = "startedAt", column = "t_e.started_at"),
+                                @FieldResult(name = "lifecycleStatus", column = "t_e.lifecycle_status"),
+//                                @FieldResult(name = "program", column = "program.id"),
+                                @FieldResult(name = "userId", column = "t_e.user_id"),
+                        }
+                ),
+                @EntityResult(
+                        entityClass = Task.class,
+                        fields = {
+                                @FieldResult(name = "id", column = "task.id"),
+                                @FieldResult(name = "title", column = "task.title"),
+                                @FieldResult(name = "avatarUrl", column = "task.avatar_url"),
+                                @FieldResult(name = "description", column = "task.description"),
+                                @FieldResult(name = "position", column = "task.position")
+//                                @FieldResult(name = "program", column = "program.id")
+                        }
+                )
+        }
+)
 
 @Entity
 @Table(uniqueConstraints={

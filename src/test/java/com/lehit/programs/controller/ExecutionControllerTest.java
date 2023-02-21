@@ -58,6 +58,7 @@ class ExecutionControllerTest {
 
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
         testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
+        testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 3));
 
 
         this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program.getId())
@@ -80,7 +81,7 @@ class ExecutionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.taskExecutions", hasSize(2)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.taskExecutions", hasSize(3)));
     }
 
     @Test
