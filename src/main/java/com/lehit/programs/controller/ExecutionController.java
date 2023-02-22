@@ -6,6 +6,7 @@ import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.TaskExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
 import com.lehit.programs.model.projection.ProgramExecutionBasicProjection;
+import com.lehit.programs.model.projection.ProgramExecutionWithTaskExecutions;
 import com.lehit.programs.model.projection.TaskExecutionWithItemsProjection;
 import com.lehit.programs.service.ActionItemsService;
 import com.lehit.programs.service.ExecutionProgressService;
@@ -61,10 +62,36 @@ public class ExecutionController {
     }
 
     @GetMapping("/executions/{clientId}/current-program")
-    public List<ProgramExecution> getCurrentProgramData(@PathVariable UUID clientId) {
+    public Object getCurrentProgramData(@PathVariable UUID clientId) {
 //        return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
-        return executionService.getActiveProgramExecutionData1(clientId);
-//                .orElseThrow();
+         var res = executionService.getActiveProgramExecutionData1(clientId)
+                .orElseThrow();
+
+         log.debug("after---------------");
+
+         var ee = res.getTaskExecutions();
+
+
+
+        log.debug("after 22---------------");
+
+
+        var tt = ee;
+
+//        log.debug("eee {}", ee);
+//
+//         log.debug("ololo {}", res);
+
+         log.debug("so now what");
+         return ee.get(0).getId();
+    }
+
+    @GetMapping("/executions/{clientId}/current-program/1")
+    public boolean getCurrentProgramData11(@PathVariable UUID clientId) {
+//        return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
+        var ff = executionService.getActiveProgramExecutionData1(clientId)
+                .orElseThrow();
+        return true;
     }
 
     @GetMapping("/executions/{clientId}/program-executions")

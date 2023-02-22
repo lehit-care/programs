@@ -6,6 +6,7 @@ import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.TaskExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
 import com.lehit.programs.model.projection.ProgramExecutionBasicProjection;
+import com.lehit.programs.model.projection.ProgramExecutionWithTaskExecutions;
 import com.lehit.programs.model.projection.TaskExecutionWithItemsProjection;
 import com.lehit.programs.repository.ItemExecutionRepository;
 import com.lehit.programs.repository.ProgramExecutionRepository;
@@ -138,9 +139,10 @@ public class ExecutionProgressService {
                 .stream().findFirst();
     }
 
-    public List<ProgramExecution> getActiveProgramExecutionData1(UUID userId){
+    public Optional<ProgramExecution> getActiveProgramExecutionData1(UUID userId){
         return programExecutionRepository
-                .findProgramExecutionsWithTaskExecutionsWithTasks(userId, 1);
+                .findProgramExecutionsWithTaskExecutionsWithTasks(userId, 1)
+                .stream().findFirst();
     }
 
 

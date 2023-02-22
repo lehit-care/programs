@@ -4,6 +4,7 @@ package com.lehit.programs.repository;
 import com.lehit.common.enums.ExecutionStatus;
 import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.projection.ProgramExecutionBasicProjection;
+import com.lehit.programs.model.projection.ProgramExecutionWithTaskExecutions;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;

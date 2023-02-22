@@ -1,10 +1,14 @@
 package com.lehit.programs.model;
 
 import com.lehit.common.enums.ExecutionStatus;
+import com.lehit.programs.model.projection.ProgramExecutionWithTaskExecutions;
+import com.lehit.programs.model.projection.TaskExecutionBasicProjection;
+import com.lehit.programs.model.projection.dto.ProgramExecutionDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -37,6 +41,7 @@ import java.util.UUID;
 
 @NamedNativeQuery(
         name = "ProgramExecution.findProgramExecutionsWithTaskExecutionsWithTasks",
+        hints = @QueryHint(name = "org.hibernate.readOnly", value = "true"),
         query =
                 """
                                SELECT *
@@ -50,28 +55,35 @@ import java.util.UUID;
                                                                            p_e.id as "p_e.id",
                                                                            p_e.finished_at as "p_e.finished_at",
                                                                            p_e.lifecycle_status as "p_e.lifecycle_status",
+                                                                           p_e.user_id as "p_e.user_id",
+                                                                           p_e.program_id as "p_e.program_id",
+                                                                           p_e.started_at as "p_e.started_at",
+                                                                           
                                                                            program.id as "program.id",
                                                                            program.author_id as "program.author_id",
                                                                            program.avatar_url as "program.avatar_url",
                                                                            program.description as "program.description",
                                                                            program.title as "program.title",
                                                                            program.visibility_status as "program.visibility_status",
-                                                                           p_e.program_id as "p_e.program_id",
-                                                                           p_e.started_at as "p_e.started_at",
-                                                                           t_e.program_execution as " t_e.program_execution",
+                                                                           
+                                                                           
+                                                                           t_e.program_execution as "t_e.program_execution",
                                                                            t_e.id as "t_e.id",
                                                                            t_e.created_at as "t_e.created_at",
                                                                            t_e.finished_at as "t_e.finished_at",
                                                                            t_e.lifecycle_status as "t_e.lifecycle_status",
                                                                            t_e.started_at as "t_e.started_at",
-                                                                           task.id as " task.id",
+                                                                           t_e.task_id as "t_e.task_id",
+                                                                           t_e.user_id as "t_e.user_id",
+                                                                           
+                                                                           task.id as "task.id",
+                                                                           task.title as "task.title",
                                                                            task.avatar_url as "task.avatar_url",
                                                                            task.description as "task.description",
                                                                            task.position as "task.position",
-                                                                           task.program_id,
-                                                                           task.title as "task.title",
-                                                                           t_e.task_id,
-                                                                           p_e.user_id as "p_e.user_id"
+                                                                           task.program_id as "task.program_id"
+                                                                         
+                                                                           
                                                                        from
                                                                            program_execution p_e
                                                                        left join
@@ -90,11 +102,63 @@ import java.util.UUID;
                                                                            p_e.started_at desc,
                                                                            t_e.created_at  ) p_pc
                                                                     ) p_pc_r WHERE p_pc_r.rank <=?                                                                                            
-                        """,
-        resultSetMapping = "ProgramExecutionsWithTaskExecutionsWithTasks"
+                        """
+        , resultSetMapping = "ProgramExecutionsWithTaskExecutionsWithTasks"
 )
 @SqlResultSetMapping(
         name = "ProgramExecutionsWithTaskExecutionsWithTasks",
+//        classes ={
+//                @ConstructorResult(
+//                        targetClass = ProgramExecutionDto.class,
+//                        columns = {
+//                                @ColumnResult( name = "p_e.id"),
+//                                @ColumnResult(name ="p_e.user_id"),
+//                                @ColumnResult( name = "p_e.started_at"),
+//                                @ColumnResult(name = "p_e.finished_at"),
+//                                @ColumnResult(name = "p_e.lifecycle_status"),
+//                                @ColumnResult(name = "p_e.program_id"),
+//                        }
+//                ),
+//
+//                @ConstructorResult(
+//                        targetClass = Program.class,
+//                        columns = {
+//                                @ColumnResult(name = "program.id"),
+//                                @ColumnResult(name =  "program.title"),
+//                                @ColumnResult(name =  "program.avatar_url"),
+//                                @ColumnResult(name =  "program.description"),
+//                                @ColumnResult(name = "program.author_id"),
+//                                @ColumnResult(name =  "program.visibility_status")
+//                        }
+//                ),
+//
+//                @ConstructorResult(
+//                        targetClass = TaskExecution.class,
+//                        columns = {
+//                                @ColumnResult(name = "t_e.id"),
+////                                @FieldResult(name = "createdAt", column = "t_e.created_at"),
+//                                @ColumnResult(name =  "t_e.finished_at"),
+//                                @ColumnResult(name =  "t_e.started_at"),
+//                                @ColumnResult(name = "t_e.lifecycle_status"),
+//                                @ColumnResult(name = "t_e.user_id"),
+//                                @ColumnResult(name =  "t_e.program_execution"),
+//                                @ColumnResult(name = "t_e.task_id")
+//                        }
+//                ),
+//
+//                @ConstructorResult(
+//                        targetClass = Task.class,
+//                        columns = {
+//                                @ColumnResult(name =  "task.id"),
+//                                @ColumnResult(name =  "task.title"),
+//                                @ColumnResult(name = "task.avatar_url"),
+//                                @ColumnResult(name =  "task.description"),
+//                                @ColumnResult(name =  "task.position"),
+//                                @ColumnResult(name =  "program.id")
+//                        }
+//                )
+//
+//        }
         entities = {
                 @EntityResult(
                         entityClass = ProgramExecution.class,
@@ -115,7 +179,7 @@ import java.util.UUID;
                                 @FieldResult(name = "title", column = "program.title"),
                                 @FieldResult(name = "avatarUrl", column = "program.avatar_url"),
                                 @FieldResult(name = "description", column = "program.description"),
-                                @FieldResult(name = "authorId", column = "program.author_id"),
+                                @FieldResult(name = "author", column = "program.author_id"),
                                 @FieldResult(name = "visibilityStatus", column = "program.visibility_status")
                         }
                 ),
@@ -127,8 +191,9 @@ import java.util.UUID;
                                 @FieldResult(name = "finishedAt", column = "t_e.finished_at"),
                                 @FieldResult(name = "startedAt", column = "t_e.started_at"),
                                 @FieldResult(name = "lifecycleStatus", column = "t_e.lifecycle_status"),
-//                                @FieldResult(name = "program", column = "program.id"),
                                 @FieldResult(name = "userId", column = "t_e.user_id"),
+                                @FieldResult(name = "programExecution", column = "t_e.program_execution"),
+                                @FieldResult(name = "task", column = "t_e.task_id")
                         }
                 ),
                 @EntityResult(
@@ -138,8 +203,8 @@ import java.util.UUID;
                                 @FieldResult(name = "title", column = "task.title"),
                                 @FieldResult(name = "avatarUrl", column = "task.avatar_url"),
                                 @FieldResult(name = "description", column = "task.description"),
-                                @FieldResult(name = "position", column = "task.position")
-//                                @FieldResult(name = "program", column = "program.id")
+                                @FieldResult(name = "position", column = "task.position"),
+                                @FieldResult(name = "program", column = "program.id")
                         }
                 )
         }
@@ -189,5 +254,4 @@ public class ProgramExecution {
     @EqualsAndHashCode.Include
     @ToString.Include
     private UUID programId;
-
 }
