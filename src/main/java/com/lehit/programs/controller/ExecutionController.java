@@ -61,7 +61,7 @@ public class ExecutionController {
 
     @GetMapping("/executions/{clientId}/current-program")
     public ProgramExecution getCurrentProgramData(@PathVariable UUID clientId) {
-        return executionService.getActiveProgramExecutionData1(clientId).orElseThrow();
+        return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
     }
 
 

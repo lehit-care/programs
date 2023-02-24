@@ -131,7 +131,7 @@ public class ExecutionProgressService {
     }
 
 
-    public Optional<ProgramExecution>  getActiveProgramExecutionData1(UUID userId) {
+    public Optional<ProgramExecution> getActiveProgramExecutionData(UUID userId) {
         return executionExtendedRepository.getFullExecutions(userId, 1).stream().findFirst();
     }
 
