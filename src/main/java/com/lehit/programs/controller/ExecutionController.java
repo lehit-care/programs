@@ -6,7 +6,6 @@ import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.TaskExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
 import com.lehit.programs.model.projection.ProgramExecutionBasicProjection;
-import com.lehit.programs.model.projection.ProgramExecutionWithTaskExecutions;
 import com.lehit.programs.model.projection.TaskExecutionWithItemsProjection;
 import com.lehit.programs.service.ActionItemsService;
 import com.lehit.programs.service.ExecutionProgressService;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -62,45 +60,12 @@ public class ExecutionController {
     }
 
     @GetMapping("/executions/{clientId}/current-program")
-    public List<ProgramExecution> getCurrentProgramData(@PathVariable UUID clientId) {
-//        return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
-         var res =  executionService.getActiveProgramExecutionData1(clientId);
-
-
-         log.debug("after---------------");
-
-//         var ee = res.getTaskExecutions();
-
-
-
-        log.debug("after 22---------------");
-
-
-//        var tt = ee;
-
-//        log.debug("eee {}", ee);
-//
-//         log.debug("ololo {}", res);
-
-         log.debug("so now what");
-//         return ee.get(0).getId();
-        return res;
+    public ProgramExecution getCurrentProgramData(@PathVariable UUID clientId) {
+        return executionService.getActiveProgramExecutionData1(clientId).orElseThrow();
     }
 
-    @GetMapping("/executions/{clientId}/prg")
-    public ProgramExecution getCurrentProgramData11(@PathVariable UUID clientId) {
-        return executionService.selectById(clientId).orElseThrow();
-    }
 
-//
-//    @GetMapping("/executions/{clientId}/current-program/1")
-//    public ProgramExecution getCurrentProgramData11(@PathVariable UUID clientId) {
-//        return executionService.getActiveProgramExecutionData1(clientId).orElseThrow();
-////        var ff = executionService.getActiveProgramExecutionData1(clientId)
-////                .orElseThrow();
-////        return true;
-//    }
-
+//todo return just the program list without associations, otherwise all the collection is loaded into the mem
     @GetMapping("/executions/{clientId}/program-executions")
     public Slice<ProgramExecution> getProgramExecutions(@PathVariable UUID clientId, @RequestParam ExecutionStatus lcs, @ParameterObject Pageable pageable) {
         return executionService.getProgramExecutionData(clientId, lcs, pageable);

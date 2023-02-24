@@ -1,15 +1,10 @@
 package com.lehit.programs.model;
 
 import com.lehit.common.enums.ExecutionStatus;
-import com.lehit.programs.model.projection.ProgramExecutionWithTaskExecutions;
-import com.lehit.programs.model.projection.TaskExecutionBasicProjection;
-import com.lehit.programs.model.projection.dto.ProgramExecutionDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.hc.core5.util.Identifiable;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -108,58 +103,6 @@ import java.util.UUID;
 )
 @SqlResultSetMapping(
         name = "ProgramExecutionsWithTaskExecutionsWithTasks",
-//        classes ={
-//                @ConstructorResult(
-//                        targetClass = ProgramExecutionDto.class,
-//                        columns = {
-//                                @ColumnResult( name = "p_e.id"),
-//                                @ColumnResult(name ="p_e.user_id"),
-//                                @ColumnResult( name = "p_e.started_at"),
-//                                @ColumnResult(name = "p_e.finished_at"),
-//                                @ColumnResult(name = "p_e.lifecycle_status"),
-//                                @ColumnResult(name = "p_e.program_id"),
-//                        }
-//                ),
-//
-//                @ConstructorResult(
-//                        targetClass = Program.class,
-//                        columns = {
-//                                @ColumnResult(name = "program.id"),
-//                                @ColumnResult(name =  "program.title"),
-//                                @ColumnResult(name =  "program.avatar_url"),
-//                                @ColumnResult(name =  "program.description"),
-//                                @ColumnResult(name = "program.author_id"),
-//                                @ColumnResult(name =  "program.visibility_status")
-//                        }
-//                ),
-//
-//                @ConstructorResult(
-//                        targetClass = TaskExecution.class,
-//                        columns = {
-//                                @ColumnResult(name = "t_e.id"),
-////                                @FieldResult(name = "createdAt", column = "t_e.created_at"),
-//                                @ColumnResult(name =  "t_e.finished_at"),
-//                                @ColumnResult(name =  "t_e.started_at"),
-//                                @ColumnResult(name = "t_e.lifecycle_status"),
-//                                @ColumnResult(name = "t_e.user_id"),
-//                                @ColumnResult(name =  "t_e.program_execution"),
-//                                @ColumnResult(name = "t_e.task_id")
-//                        }
-//                ),
-//
-//                @ConstructorResult(
-//                        targetClass = Task.class,
-//                        columns = {
-//                                @ColumnResult(name =  "task.id"),
-//                                @ColumnResult(name =  "task.title"),
-//                                @ColumnResult(name = "task.avatar_url"),
-//                                @ColumnResult(name =  "task.description"),
-//                                @ColumnResult(name =  "task.position"),
-//                                @ColumnResult(name =  "program.id")
-//                        }
-//                )
-//
-//        }
         entities = {
                 @EntityResult(
                         entityClass = ProgramExecution.class,
@@ -170,8 +113,7 @@ import java.util.UUID;
                                 @FieldResult(name = "startedAt", column = "p_e.started_at"),
                                 @FieldResult(name = "lifecycleStatus", column = "p_e.lifecycle_status"),
                                 @FieldResult(name = "program", column = "program.id"),
-                                @FieldResult(name = "userId", column = "p_e.user_id"),
-//                                @FieldResult(name = "taskExecutions", column = "t_e.id")
+                                @FieldResult(name = "userId", column = "p_e.user_id")
                         }
                 ),
                 @EntityResult(
@@ -245,7 +187,7 @@ public class ProgramExecution {
     private ExecutionStatus lifecycleStatus;
 
     @OneToMany(mappedBy = "programExecution", fetch = FetchType.LAZY, orphanRemoval = true)
-//    @OrderBy("createdAt")
+    @OrderBy("createdAt")
     private List<TaskExecution> taskExecutions;
 
     @OneToOne(fetch = FetchType.LAZY)

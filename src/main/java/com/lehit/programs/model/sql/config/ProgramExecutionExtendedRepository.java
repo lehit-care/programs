@@ -25,10 +25,6 @@ public class ProgramExecutionExtendedRepository {
                 .setHint(HibernateHints.HINT_READ_ONLY, true)
                 .unwrap(org.hibernate.query.NativeQuery.class)
                 .setResultListTransformer(programExecutionsResultTransformer)
-//                .setResultTransformer(
-//                        programExecutionsResultTransformer
-////                        programExecutionsResultTransformer.transformer()
-//                )
                 .getResultList();
 
     }

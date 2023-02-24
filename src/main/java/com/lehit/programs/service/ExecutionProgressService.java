@@ -6,7 +6,6 @@ import com.lehit.programs.model.ProgramExecution;
 import com.lehit.programs.model.TaskExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
 import com.lehit.programs.model.projection.ProgramExecutionBasicProjection;
-import com.lehit.programs.model.projection.ProgramExecutionWithTaskExecutions;
 import com.lehit.programs.model.projection.TaskExecutionWithItemsProjection;
 import com.lehit.programs.model.sql.config.ProgramExecutionExtendedRepository;
 import com.lehit.programs.repository.ItemExecutionRepository;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,7 +31,7 @@ import static com.lehit.common.enums.ExecutionStatus.*;
 @RequiredArgsConstructor
 @Slf4j
 @Service
-//@Transactional(readOnly = true)
+@Transactional(readOnly = true)
 public class ExecutionProgressService {
     private final TasksService tasksService;
     private final ActionItemsService actionItemsService;
@@ -135,26 +133,8 @@ public class ExecutionProgressService {
     }
 
 
-    //    using direct query limitation limits the number of tasks executions as it fetches the join table
-    public Optional<ProgramExecution> getActiveProgramExecutionData(UUID userId){
-        return programExecutionRepository
-                .findByUserIdAndLifecycleStatus(userId, STARTED,  PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "startedAt")))
-                .stream().findFirst();
-    }
-//
-//    public List<Object[]>  getActiveProgramExecutionData1(UUID userId){
-//        return executionExtendedRepository.bla(userId, 1);
-//        return programExecutionRepository
-//                .findProgramExecutionsWithTaskExecutionsWithTasks(userId, 1)
-//                ;
-//                .stream().findFirst();
-//    }
-
-    public List<ProgramExecution>  getActiveProgramExecutionData1(UUID userId) {
-        return executionExtendedRepository.bla(userId, 1);
-    }
-    public Optional<ProgramExecution> selectById(UUID userId){
-        return programExecutionRepository.selectById(userId);
+    public Optional<ProgramExecution>  getActiveProgramExecutionData1(UUID userId) {
+        return executionExtendedRepository.bla(userId, 1).stream().findFirst();
     }
 
 

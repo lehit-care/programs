@@ -51,7 +51,7 @@ class ExecutionsDbTest{
         hibernateQueryInterceptor.startQueryCount();
         log.debug("start queryCount");
 
-        var exe = progressService.getActiveProgramExecutionData(clientId);
+        var exe = progressService.getActiveProgramExecutionData1(clientId);
 
         log.debug("end queryCount");
         long queriesCount = hibernateQueryInterceptor.getQueryCount();

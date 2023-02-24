@@ -9,9 +9,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,10 +19,6 @@ public interface ProgramExecutionRepository extends JpaRepository<ProgramExecuti
     @EntityGraph(value = "base-exe-including-programs-tasks-executions")
     Optional<ProgramExecution> findByUserIdAndProgramId(UUID userId, UUID programId);
 
-    @Query(value = "select pe.* from program_execution pe where pe.id = ?", nativeQuery = true)
-    Optional<ProgramExecution> selectById(UUID userId);
-
-    List<Object[]>  findProgramExecutionsWithTaskExecutionsWithTasks(UUID userId, int count);
 
     @EntityGraph(value = "base-exe-including-programs-tasks-executions")
     Slice<ProgramExecution> findByUserIdAndLifecycleStatus(UUID userId, ExecutionStatus lifecycleStatus, Pageable pageable);
