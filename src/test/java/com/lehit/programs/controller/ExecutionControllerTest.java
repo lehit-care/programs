@@ -84,29 +84,7 @@ class ExecutionControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.taskExecutions", hasSize(3)));
     }
 
-    @Test
-    void getActiveProgramStructure22() throws Exception{
-        UUID clientId = UUID.randomUUID();
 
-        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
-
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
-
-        var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
-        testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
-        testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 3));
-
-
-       var exe = progressService.assignProgram(clientId, program.getId());
-
-        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/current-program", exe.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.taskExecutions", hasSize(3)));
-    }
 
     @Test
     void startTheSameProgramTwice() throws Exception{

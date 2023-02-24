@@ -96,8 +96,8 @@ import java.util.UUID;
                                                                            and p_e.lifecycle_status=1
                                                                        order by
                                                                            p_e.started_at desc,
-                                                                           t_e.created_at  ) p_pc
-                                                                    ) p_pc_r WHERE p_pc_r.rank <= :rank                                                                                            
+                                                                           t_e.created_at  ) pe_tc
+                                                                    ) pe_tc_r WHERE pe_tc_r.rank <= :rank                                                                                            
                         """
         , resultSetMapping = "ProgramExecutionsWithTaskExecutionsWithTasks"
 )
