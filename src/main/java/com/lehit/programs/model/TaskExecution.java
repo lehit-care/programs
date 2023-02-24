@@ -65,6 +65,7 @@ public class TaskExecution extends Auditable {
     @ToString.Exclude
     @OneToMany(mappedBy = "taskExecution", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    @OrderBy("createdAt")
     private List<ItemExecution> itemExecutions;
 
     @ToString.Exclude

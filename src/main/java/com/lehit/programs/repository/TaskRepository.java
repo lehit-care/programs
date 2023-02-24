@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public interface TaskRepository extends JpaRepository<Task, UUID>, JpaSpecificationExecutor<Task>{
 
-    @Query(value = "SELECT t.id FROM Task t WHERE program.id = ?1")
+    @Query(value = "SELECT t.id FROM Task t WHERE program.id = ?1 ORDER BY t.position ASC")
     List<UUID> selectIdsByProgramId(UUID programId);
 
     @EntityGraph(value = "task-including-items")
