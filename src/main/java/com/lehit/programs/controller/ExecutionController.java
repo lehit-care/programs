@@ -62,37 +62,44 @@ public class ExecutionController {
     }
 
     @GetMapping("/executions/{clientId}/current-program")
-    public Object getCurrentProgramData(@PathVariable UUID clientId) {
+    public List<ProgramExecution> getCurrentProgramData(@PathVariable UUID clientId) {
 //        return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
-         var res = executionService.getActiveProgramExecutionData1(clientId)
-                .orElseThrow();
+         var res =  executionService.getActiveProgramExecutionData1(clientId);
+
 
          log.debug("after---------------");
 
-         var ee = res.getTaskExecutions();
+//         var ee = res.getTaskExecutions();
 
 
 
         log.debug("after 22---------------");
 
 
-        var tt = ee;
+//        var tt = ee;
 
 //        log.debug("eee {}", ee);
 //
 //         log.debug("ololo {}", res);
 
          log.debug("so now what");
-         return ee.get(0).getId();
+//         return ee.get(0).getId();
+        return res;
     }
 
-    @GetMapping("/executions/{clientId}/current-program/1")
-    public boolean getCurrentProgramData11(@PathVariable UUID clientId) {
-//        return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
-        var ff = executionService.getActiveProgramExecutionData1(clientId)
-                .orElseThrow();
-        return true;
+    @GetMapping("/executions/{clientId}/prg")
+    public ProgramExecution getCurrentProgramData11(@PathVariable UUID clientId) {
+        return executionService.selectById(clientId).orElseThrow();
     }
+
+//
+//    @GetMapping("/executions/{clientId}/current-program/1")
+//    public ProgramExecution getCurrentProgramData11(@PathVariable UUID clientId) {
+//        return executionService.getActiveProgramExecutionData1(clientId).orElseThrow();
+////        var ff = executionService.getActiveProgramExecutionData1(clientId)
+////                .orElseThrow();
+////        return true;
+//    }
 
     @GetMapping("/executions/{clientId}/program-executions")
     public Slice<ProgramExecution> getProgramExecutions(@PathVariable UUID clientId, @RequestParam ExecutionStatus lcs, @ParameterObject Pageable pageable) {

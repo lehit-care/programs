@@ -7,6 +7,7 @@ import com.lehit.programs.model.projection.dto.ProgramExecutionDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.hc.core5.util.Identifiable;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -86,22 +87,22 @@ import java.util.UUID;
                                                                            
                                                                        from
                                                                            program_execution p_e
-                                                                       left join
+                                                                       left join 
                                                                            program program
                                                                                on program.id=p_e.program_id
-                                                                       left join
+                                                                       left join 
                                                                            task_execution t_e
                                                                                on p_e.id=t_e.program_execution
-                                                                       left join
+                                                                       left join 
                                                                            task task
                                                                                on task.id=t_e.task_id
                                                                        where
-                                                                           p_e.user_id= ?
+                                                                           p_e.user_id= :user
                                                                            and p_e.lifecycle_status=1
                                                                        order by
                                                                            p_e.started_at desc,
                                                                            t_e.created_at  ) p_pc
-                                                                    ) p_pc_r WHERE p_pc_r.rank <=?                                                                                            
+                                                                    ) p_pc_r WHERE p_pc_r.rank <= :rank                                                                                            
                         """
         , resultSetMapping = "ProgramExecutionsWithTaskExecutionsWithTasks"
 )
@@ -170,6 +171,7 @@ import java.util.UUID;
                                 @FieldResult(name = "lifecycleStatus", column = "p_e.lifecycle_status"),
                                 @FieldResult(name = "program", column = "program.id"),
                                 @FieldResult(name = "userId", column = "p_e.user_id"),
+//                                @FieldResult(name = "taskExecutions", column = "t_e.id")
                         }
                 ),
                 @EntityResult(
@@ -243,7 +245,7 @@ public class ProgramExecution {
     private ExecutionStatus lifecycleStatus;
 
     @OneToMany(mappedBy = "programExecution", fetch = FetchType.LAZY, orphanRemoval = true)
-    @OrderBy("createdAt")
+//    @OrderBy("createdAt")
     private List<TaskExecution> taskExecutions;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -251,7 +253,6 @@ public class ProgramExecution {
     private Program program;
 
     @Column(name = "program_id")
-    @EqualsAndHashCode.Include
     @ToString.Include
     private UUID programId;
 }
