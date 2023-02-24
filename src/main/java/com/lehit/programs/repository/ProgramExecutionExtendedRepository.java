@@ -1,6 +1,7 @@
-package com.lehit.programs.model.sql.config;
+package com.lehit.programs.repository;
 
 import com.lehit.programs.model.ProgramExecution;
+import com.lehit.programs.model.sql.config.DistinctProgramExecutionsResultTransformer;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.jpa.HibernateHints;
@@ -17,7 +18,7 @@ public class ProgramExecutionExtendedRepository {
     private final DistinctProgramExecutionsResultTransformer programExecutionsResultTransformer;
 
 
-    public List<ProgramExecution> bla(UUID userId, int count){
+    public List<ProgramExecution> getFullExecutions(UUID userId, int count){
         return  (List<ProgramExecution>) entityManager
                 .createNamedQuery("ProgramExecution.findProgramExecutionsWithTaskExecutionsWithTasks")
                 .setParameter("user", userId)

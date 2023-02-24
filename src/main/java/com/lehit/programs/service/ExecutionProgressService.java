@@ -7,17 +7,15 @@ import com.lehit.programs.model.TaskExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
 import com.lehit.programs.model.projection.ProgramExecutionBasicProjection;
 import com.lehit.programs.model.projection.TaskExecutionWithItemsProjection;
-import com.lehit.programs.model.sql.config.ProgramExecutionExtendedRepository;
+import com.lehit.programs.repository.ProgramExecutionExtendedRepository;
 import com.lehit.programs.repository.ItemExecutionRepository;
 import com.lehit.programs.repository.ProgramExecutionRepository;
 import com.lehit.programs.repository.TaskExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -134,7 +132,7 @@ public class ExecutionProgressService {
 
 
     public Optional<ProgramExecution>  getActiveProgramExecutionData1(UUID userId) {
-        return executionExtendedRepository.bla(userId, 1).stream().findFirst();
+        return executionExtendedRepository.getFullExecutions(userId, 1).stream().findFirst();
     }
 
 
