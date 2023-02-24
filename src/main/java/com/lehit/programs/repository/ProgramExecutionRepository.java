@@ -19,6 +19,7 @@ public interface ProgramExecutionRepository extends JpaRepository<ProgramExecuti
     @EntityGraph(value = "base-exe-including-programs-tasks-executions")
     Optional<ProgramExecution> findByUserIdAndProgramId(UUID userId, UUID programId);
 
+
     @EntityGraph(value = "base-exe-including-programs-tasks-executions")
     Slice<ProgramExecution> findByUserIdAndLifecycleStatus(UUID userId, ExecutionStatus lifecycleStatus, Pageable pageable);
 

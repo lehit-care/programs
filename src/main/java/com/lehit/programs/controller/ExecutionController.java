@@ -61,9 +61,11 @@ public class ExecutionController {
 
     @GetMapping("/executions/{clientId}/current-program")
     public ProgramExecution getCurrentProgramData(@PathVariable UUID clientId) {
-        return executionService.getActiveProgramExecutionData(clientId).orElseThrow();
+        return executionService.getActiveProgramExecutionData1(clientId).orElseThrow();
     }
 
+
+//todo return just the program list without associations, otherwise all the collection is loaded into the mem
     @GetMapping("/executions/{clientId}/program-executions")
     public Slice<ProgramExecution> getProgramExecutions(@PathVariable UUID clientId, @RequestParam ExecutionStatus lcs, @ParameterObject Pageable pageable) {
         return executionService.getProgramExecutionData(clientId, lcs, pageable);

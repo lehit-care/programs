@@ -42,10 +42,11 @@ public class ExecutionProgressServiceTest {
 
         progressService.startTaskExecution(clientId, task1.getId());
 
-        var exe = progressService.getActiveProgramExecutionData(clientId);
+        var exe = progressService.getActiveProgramExecutionData1(clientId);
 
 
         log.debug("dfvfdv {}", exe);
+
 
     }
 

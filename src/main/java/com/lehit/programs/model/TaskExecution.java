@@ -37,9 +37,10 @@ import java.util.UUID;
 @Getter @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor @AllArgsConstructor
-@Builder @ToString
+@Builder @ToString(onlyExplicitlyIncluded = true)
 public class TaskExecution extends Auditable {
 
+    @ToString.Include
     @Schema(hidden = true)
     @Id
     @Column(updatable= false)
@@ -64,6 +65,7 @@ public class TaskExecution extends Auditable {
     @ToString.Exclude
     @OneToMany(mappedBy = "taskExecution", fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonIgnore
+    @OrderBy("createdAt")
     private List<ItemExecution> itemExecutions;
 
     @ToString.Exclude

@@ -7,16 +7,15 @@ import com.lehit.programs.model.TaskExecution;
 import com.lehit.programs.model.payload.ExecutedItemRequest;
 import com.lehit.programs.model.projection.ProgramExecutionBasicProjection;
 import com.lehit.programs.model.projection.TaskExecutionWithItemsProjection;
+import com.lehit.programs.repository.ProgramExecutionExtendedRepository;
 import com.lehit.programs.repository.ItemExecutionRepository;
 import com.lehit.programs.repository.ProgramExecutionRepository;
 import com.lehit.programs.repository.TaskExecutionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +36,8 @@ public class ExecutionProgressService {
     private final TaskExecutionRepository taskExecutionRepository;
     private final ProgramExecutionRepository programExecutionRepository;
     private final ItemExecutionRepository itemExecutionRepository;
+
+    private final ProgramExecutionExtendedRepository executionExtendedRepository;
 
 
     @Transactional
@@ -130,11 +131,8 @@ public class ExecutionProgressService {
     }
 
 
-    //    using direct query limitation limits the number of tasks executions as it fetches the join table
-    public Optional<ProgramExecution> getActiveProgramExecutionData(UUID userId){
-        return programExecutionRepository
-                .findByUserIdAndLifecycleStatus(userId, STARTED,  PageRequest.of(0, 1, Sort.by(Sort.Direction.DESC, "startedAt")))
-                .stream().findFirst();
+    public Optional<ProgramExecution>  getActiveProgramExecutionData1(UUID userId) {
+        return executionExtendedRepository.getFullExecutions(userId, 1).stream().findFirst();
     }
 
 
