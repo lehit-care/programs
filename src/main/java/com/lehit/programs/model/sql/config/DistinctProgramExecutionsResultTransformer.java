@@ -34,15 +34,14 @@ public class DistinctProgramExecutionsResultTransformer implements ResultListTra
 
                 for (Object tuple : tuples) {
 //                    if(tuple instanceof Identifiable) {
-                        entityManager.detach(tuple);
+//                        entityManager.detach(tuple);
 
                         if (tuple instanceof ProgramExecution) {
                             programExecution = (ProgramExecution) tuple;
-                        }
-
-                        else if (tuple instanceof TaskExecution){
+                        } else if (tuple instanceof TaskExecution) {
                             taskExecution = (TaskExecution) tuple;
                         }
+//                    }
                 }
 
                 if (programExecution != null) {

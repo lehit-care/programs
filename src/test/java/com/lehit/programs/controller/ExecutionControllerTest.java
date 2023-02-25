@@ -47,7 +47,6 @@ class ExecutionControllerTest {
 
 
     protected static final String CONTROLLER_URL_ROOT_PREFIX = "/api/v1/";
-
     @Test
     void getActiveProgramStructure() throws Exception{
         UUID clientId = UUID.randomUUID();
@@ -59,6 +58,64 @@ class ExecutionControllerTest {
         var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
         testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
         testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 3));
+
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-task/{taskId}", clientId, task1.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
+
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/current-program", clientId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.taskExecutions", hasSize(3)));
+    }
+
+
+    @Test
+    void getActiveProgramStructureFewPrograms() throws Exception{
+        UUID clientId = UUID.randomUUID();
+
+        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+
+        var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
+        testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
+        testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 3));
+
+
+        var program2 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var task21 = testDataTx.saveTask(testDataGenerator.generateTask(program2.getId(), 1));
+
+        var program3 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var task31 = testDataTx.saveTask(testDataGenerator.generateTask(program3.getId(), 1));
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program2.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
+
+        this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program3.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.lifecycleStatus").value(ExecutionStatus.STARTED.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.finishedAt").isEmpty())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.startedAt").isNotEmpty());
 
 
         this.mockMvc.perform(post(CONTROLLER_URL_ROOT_PREFIX + "/executions/{clientId}/start-program/{programId}", clientId, program.getId())

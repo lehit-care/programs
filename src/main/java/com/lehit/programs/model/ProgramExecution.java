@@ -45,7 +45,7 @@ import java.util.UUID;
                                                            SELECT
                                                                *,
                                                                DENSE_RANK() OVER (
-                                                                   ORDER BY "p_e.started_at"
+                                                                   ORDER BY "p_e.started_at" DESC
                                                                ) rank from(
                                                                         select
                                                                            p_e.id as "p_e.id",
