@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class DistinctProgramExecutionsResultTransformer implements ResultListTransformer {
+public class DistinctProgramExecutionsResultTransformer implements ResultListTransformer<ProgramExecution> {
     private final EntityManager entityManager;
 
 

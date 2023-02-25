@@ -136,7 +136,7 @@ public class ExecutionProgressService {
     }
 
 
-    public Slice<ProgramExecution> getProgramExecutionData(UUID userId, ExecutionStatus lcs, Pageable pageable){
+    public Slice<ProgramExecutionBasicProjection> getProgramExecutionData(UUID userId, ExecutionStatus lcs, Pageable pageable){
         return programExecutionRepository
                 .findByUserIdAndLifecycleStatus(userId, lcs, pageable);
     }

@@ -82,13 +82,13 @@ import java.util.UUID;
                                                                            
                                                                        from
                                                                            program_execution p_e
-                                                                       left join 
+                                                                       left join
                                                                            program program
                                                                                on program.id=p_e.program_id
-                                                                       left join 
+                                                                       left join
                                                                            task_execution t_e
                                                                                on p_e.id=t_e.program_execution
-                                                                       left join 
+                                                                       left join
                                                                            task task
                                                                                on task.id=t_e.task_id
                                                                        where
@@ -97,7 +97,7 @@ import java.util.UUID;
                                                                        order by
                                                                            p_e.started_at desc,
                                                                            t_e.created_at  ) pe_tc
-                                                                    ) pe_tc_r WHERE pe_tc_r.rank <= :rank                                                                                            
+                                                                    ) pe_tc_r WHERE pe_tc_r.rank <= :rank
                         """
         , resultSetMapping = "ProgramExecutionsWithTaskExecutionsWithTasks"
 )
