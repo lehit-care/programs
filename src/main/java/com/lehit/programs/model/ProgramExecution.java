@@ -163,7 +163,6 @@ import java.util.UUID;
 @NoArgsConstructor @AllArgsConstructor
 @Builder @ToString
 public class ProgramExecution {
-//    todo only 1 in-progress
     @Schema(hidden = true)
     @Id
     @Column(updatable= false)
