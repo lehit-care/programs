@@ -2,7 +2,6 @@ package com.lehit.programs.service;
 
 import com.lehit.programs.data.TestDataGenerator;
 import com.lehit.programs.data.TestDataTx;
-import com.lehit.programs.model.enums.ActionItemType;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,6 @@ public class TaskServiceTest {
     @Autowired
     private TestDataTx testDataTx;
     @Autowired
-    private TestDataGenerator testDataGenerator;
-    @Autowired
     private TasksService tasksService;
 
 
@@ -33,13 +30,13 @@ public class TaskServiceTest {
 
     @Test
     void deleteTaskByAuthor() {
-        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+        var author = testDataTx.saveAuthor(TestDataGenerator.generateAuthor());
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var program = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId()));
 
-        var task = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
+        var task = testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 1));
 
-        testDataTx.saveActionItem(testDataGenerator.generateAI(ActionItemType.TEXT, 1, "", "", task.getId()));
+        testDataTx.saveActionItem(TestDataGenerator.generateAI(task.getId(), 1));
 
         taskService.deleteTask(author.getId(), task.getId());
     }
@@ -47,11 +44,11 @@ public class TaskServiceTest {
 
     @Test
     void deleteTaskByFraud() {
-        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+        var author = testDataTx.saveAuthor(TestDataGenerator.generateAuthor());
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var program = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId()));
 
-        var task = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
+        var task = testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 1));
 
         assertThrows(IllegalStateException.class, () ->  taskService.deleteTask(UUID.randomUUID(), task.getId()));
 

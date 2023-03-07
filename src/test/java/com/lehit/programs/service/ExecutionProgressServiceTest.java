@@ -18,8 +18,6 @@ public class ExecutionProgressServiceTest {
     @Autowired
     private TestDataTx testDataTx;
     @Autowired
-    private TestDataGenerator testDataGenerator;
-    @Autowired
     private TasksService tasksService;
 
 
@@ -31,12 +29,12 @@ public class ExecutionProgressServiceTest {
     void getActiveExecutionStructure() {
         UUID clientId = UUID.randomUUID();
 
-        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+        var author = testDataTx.saveAuthor(TestDataGenerator.generateAuthor());
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var program = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId()));
 
-        var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
-        var task2 =  testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
+        var task1 = testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 1));
+        var task2 =  testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 2));
 
         var data = progressService.assignProgram(clientId, program.getId());
 
@@ -46,7 +44,6 @@ public class ExecutionProgressServiceTest {
 
 
         log.debug("dfvfdv {}", exe);
-
 
     }
 

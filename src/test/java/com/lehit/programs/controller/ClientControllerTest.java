@@ -33,8 +33,6 @@ class ClientControllerTest {
     @Autowired
     private TestDataTx testDataTx;
     @Autowired
-    private TestDataGenerator testDataGenerator;
-    @Autowired
     private TasksService tasksService;
     @Autowired
     private ProgramsService programsService;
@@ -54,12 +52,12 @@ class ClientControllerTest {
     void OpenStartedProgram() throws Exception{
         UUID clientId = UUID.randomUUID();
 
-        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+        var author = testDataTx.saveAuthor(TestDataGenerator.generateAuthor());
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var program = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId()));
 
-        var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
-        testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
+        var task1 = testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 1));
+        testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 2));
 
 
 
@@ -90,12 +88,12 @@ class ClientControllerTest {
     void OpenStartedProgramCheckTasksOrder() throws Exception{
         UUID clientId = UUID.randomUUID();
 
-        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+        var author = testDataTx.saveAuthor(TestDataGenerator.generateAuthor());
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var program = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId()));
 
-        var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
-        var task2 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
+        var task1 = testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 1));
+        var task2 = testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 2));
 
 
 
@@ -119,12 +117,12 @@ class ClientControllerTest {
     void OpenNotStartedProgram() throws Exception{
         UUID clientId = UUID.randomUUID();
 
-        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+        var author = testDataTx.saveAuthor(TestDataGenerator.generateAuthor());
 
-        var program = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId()));
+        var program = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId()));
 
-        var task1 = testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 1));
-        testDataTx.saveTask(testDataGenerator.generateTask(program.getId(), 2));
+        var task1 = testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 1));
+        testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 2));
 
 
 
@@ -141,14 +139,14 @@ class ClientControllerTest {
     @Test
     void searchPrograms() throws Exception{
         String titleBase = UUID.randomUUID().toString();
-        var author = testDataTx.saveAuthor(testDataGenerator.generateAuthor());
+        var author = testDataTx.saveAuthor(TestDataGenerator.generateAuthor());
 
-        var program1 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId(), titleBase));
-        var program2 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId(), titleBase+"srferf"));
-        var program3 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId(),"dsrkjvcndk "+titleBase));
-        var program4 = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId(),"dsrkjvcndk "+titleBase+"srferf"));
+        var program1 = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(), titleBase));
+        var program2 = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(), titleBase+"srferf"));
+        var program3 = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(),"dsrkjvcndk "+titleBase));
+        var program4 = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(),"dsrkjvcndk "+titleBase+"srferf"));
 
-        var programNotMatchingTitle = testDataTx.saveProgram(testDataGenerator.generateProgram(author.getId(), UUID.randomUUID().toString()));
+        var programNotMatchingTitle = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(), UUID.randomUUID().toString()));
 
 
 

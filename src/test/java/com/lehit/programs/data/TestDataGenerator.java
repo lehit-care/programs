@@ -2,21 +2,22 @@ package com.lehit.programs.data;
 
 import com.lehit.programs.model.*;
 import com.lehit.programs.model.enums.ActionItemType;
-import com.lehit.programs.model.enums.ContentVisibilityStatus;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.instancio.Instancio;
 
 import java.util.UUID;
 
-@Service
+import static com.lehit.programs.model.enums.ContentVisibilityStatus.DRAFT;
+import static org.instancio.Select.field;
+
 @Slf4j
 public class TestDataGenerator {
 
-    public ActionItem generateAI(ActionItemType type, Integer position, String mediaUrl, String question, UUID taskId){
+    public static ActionItem generateAI(ActionItemType type, int position, String mediaUrl, String question, UUID taskId){
         return ActionItem.builder()
                 .title("title for " + taskId)
                 .itemType(type)
-                .position(position.byteValue())
+                .position(position)
                 .help("helpTest")
                 .informationItem(new InformationItem(mediaUrl, ""))
                 .questionItem(QuestionItem.builder().question(question).build())
@@ -24,40 +25,42 @@ public class TestDataGenerator {
                 .build();
     }
 
-    public Task generateTask(UUID programId, int position){
-        return Task.builder()
-                .avatarUrl("testAvatar")
-                .position(position)
-                .programId(programId)
-                .title("title for "  + position)
-                .build();
+    public static ActionItem generateAI(UUID taskId, int position){
+        return Instancio.of(ActionItem.class)
+                .set(field(ActionItem::getTaskId), taskId)
+                .set(field(ActionItem::getPosition), position)
+                .create();
+    }
+
+    public static Task generateTask(UUID programId, int position){
+        return Instancio.of(Task.class)
+                .set(field(Task::getProgramId), programId)
+                .set(field(Task::getPosition), position)
+                .ignore(field(Task::getActionItems))
+                .create();
     }
 
 
 
-    public Program generateProgram(UUID authorId, String title){
-        return Program.builder()
-                .description("test")
-                .title(title)
-                .authorId(authorId)
-                .build();
+    public static Program generateProgram(UUID authorId, String title){
+        return Instancio.of(Program.class)
+                .set(field(Program::getAuthorId), authorId)
+                .set(field(Program::getTitle), title)
+                .set(field(Program::getVisibilityStatus), DRAFT)
+                .ignore(field(Program::getTasks))
+                .create();
     }
 
-    public Program generateProgram(UUID authorId){
-        return Program.builder()
-                .description("test")
-                .title("test")
-                .authorId(authorId)
-                .visibilityStatus(ContentVisibilityStatus.DRAFT)
-                .build();
+    public static Program generateProgram(UUID authorId){
+        return Instancio.of(Program.class)
+                .set(field(Program::getAuthorId), authorId)
+                .set(field(Program::getVisibilityStatus), DRAFT)
+                .ignore(field(Program::getTasks))
+                .create();
     }
 
-    public Author generateAuthor(){
-        return Author.builder()
-                .id(UUID.randomUUID())
-                .firstName("name"+UUID.randomUUID())
-                .lastName("ln"+UUID.randomUUID())
-                .build();
+    public static Author generateAuthor(){
+        return Instancio.create(Author.class);
     }
 
 }
