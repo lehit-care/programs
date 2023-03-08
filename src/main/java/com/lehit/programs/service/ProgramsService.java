@@ -88,4 +88,8 @@ public class ProgramsService {
         return programRepository.findByVisibilityStatus(PUBLISHED, pageable);
     }
 
+    public Slice<ProgramWithAuthorProjection> findByCategory(UUID categoryId, Pageable pageable){
+        return programRepository.findByCategoryId(categoryId, pageable);
+    }
+
 }

@@ -61,6 +61,7 @@ import java.util.UUID;
                                                                            program.description as "program.description",
                                                                            program.title as "program.title",
                                                                            program.visibility_status as "program.visibility_status",
+                                                                           program.category_id as "program.category_id",
                                                                            
                                                                            
                                                                            t_e.program_execution as "t_e.program_execution",
@@ -124,7 +125,8 @@ import java.util.UUID;
                                 @FieldResult(name = "avatarUrl", column = "program.avatar_url"),
                                 @FieldResult(name = "description", column = "program.description"),
                                 @FieldResult(name = "author", column = "program.author_id"),
-                                @FieldResult(name = "visibilityStatus", column = "program.visibility_status")
+                                @FieldResult(name = "visibilityStatus", column = "program.visibility_status"),
+                                @FieldResult(name = "category", column = "program.category_id")
                         }
                 ),
                 @EntityResult(

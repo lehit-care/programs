@@ -48,6 +48,8 @@ public class TestDataGenerator {
                 .set(field(Program::getTitle), title)
                 .set(field(Program::getVisibilityStatus), DRAFT)
                 .ignore(field(Program::getTasks))
+                .ignore(field(Program::getCategory))
+                .ignore(field(Program::getCategoryId))
                 .create();
     }
 
@@ -56,11 +58,28 @@ public class TestDataGenerator {
                 .set(field(Program::getAuthorId), authorId)
                 .set(field(Program::getVisibilityStatus), DRAFT)
                 .ignore(field(Program::getTasks))
+                .ignore(field(Program::getCategory))
+                .ignore(field(Program::getCategoryId))
                 .create();
     }
 
+    public static Program generateProgram(UUID authorId, UUID categoryId){
+        return Instancio.of(Program.class)
+                .set(field(Program::getAuthorId), authorId)
+                .set(field(Program::getVisibilityStatus), DRAFT)
+                .set(field(Program::getCategoryId), categoryId)
+                .ignore(field(Program::getTasks))
+                .ignore(field(Program::getCategory))
+                .create();
+    }
+
+
     public static Author generateAuthor(){
         return Instancio.create(Author.class);
+    }
+
+    public static Category generateCategory(){
+        return Instancio.create(Category.class);
     }
 
 }

@@ -23,6 +23,8 @@ public class TestDataTx {
     @Autowired
     private ProgramRepository programRepository;
     @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
     private AuthorRepository authorRepository;
 
 
@@ -48,6 +50,10 @@ public class TestDataTx {
 
     public Author saveAuthor(Author author){
         return authorRepository.save(author);
+    }
+
+    public Category saveCategory(Category category){
+        return categoryRepository.save(category);
     }
 
 }

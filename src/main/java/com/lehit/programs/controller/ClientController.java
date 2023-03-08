@@ -38,9 +38,10 @@ public class ClientController {
 
 
     @GetMapping("/client/programs/search")
-    public Slice<ProgramWithAuthorProjection> searchPrograms(@RequestParam(required = false) Optional<String> title, @ParameterObject Pageable pageable){
+    public Slice<ProgramWithAuthorProjection> searchPrograms(@RequestParam(required = false) Optional<String> title, @RequestParam(required = false) Optional<UUID> categoryId, @ParameterObject Pageable pageable){
         return title.map(t -> programsService.searchByTitle(t, pageable))
-                .orElseGet(() -> programsService.findPublished(pageable));
+                .orElseGet(() -> categoryId.map( cat -> programsService.findByCategory(cat, pageable))
+                        .orElseGet(() -> programsService.findPublished(pageable)));
     }
 
 

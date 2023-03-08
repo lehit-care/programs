@@ -25,6 +25,10 @@ public interface ProgramRepository extends CrudRepository<Program, UUID>, JpaSpe
     Slice<ProgramWithAuthorProjection> findByVisibilityStatusAndTitleContainingIgnoreCase(ContentVisibilityStatus status, String title, Pageable pageable);
 
     @EntityGraph(value = "program-including-author")
+    Slice<ProgramWithAuthorProjection> findByCategoryId(UUID categoryId, Pageable pageable);
+
+
+    @EntityGraph(value = "program-including-author")
     Slice<ProgramWithAuthorProjection> findByVisibilityStatus(ContentVisibilityStatus status, Pageable pageable);
 
     @EntityGraph(value = "program-including-tasks")

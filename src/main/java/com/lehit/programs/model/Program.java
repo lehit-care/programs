@@ -72,4 +72,13 @@ public class Program implements Serializable {
     private UUID authorId;
 
     public ContentVisibilityStatus visibilityStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+    @JsonIgnore
+    private Category category;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "category_id")
+    private UUID categoryId;
 }

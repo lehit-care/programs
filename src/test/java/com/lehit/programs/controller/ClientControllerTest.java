@@ -140,11 +140,16 @@ class ClientControllerTest {
     void searchPrograms() throws Exception{
         String titleBase = UUID.randomUUID().toString();
         var author = testDataTx.saveAuthor(TestDataGenerator.generateAuthor());
+        var cat = testDataTx.saveCategory(TestDataGenerator.generateCategory());
+
 
         var program1 = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(), titleBase));
         var program2 = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(), titleBase+"srferf"));
         var program3 = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(),"dsrkjvcndk "+titleBase));
         var program4 = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(),"dsrkjvcndk "+titleBase+"srferf"));
+
+        var programCat = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(), cat.getId()));
+
 
         var programNotMatchingTitle = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(), UUID.randomUUID().toString()));
 
@@ -174,6 +179,11 @@ class ClientControllerTest {
 //                .andExpect(MockMvcResultMatchers.jsonPath("$.content", hasItem(programNotMatchingTitle.getId().toString())));
 //                .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").ofType[Int].greaterThan(5).value("5"));
 
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/client/programs/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .queryParam("categoryId", cat.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value("1"));
 
 
     }
