@@ -183,7 +183,16 @@ class ClientControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .queryParam("categoryId", cat.getId().toString()))
                 .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value("0"));
+
+        programsService.changeProgramVisibilityStatus(author.getId(), programCat.getId(), ContentVisibilityStatus.PUBLISHED);
+
+        this.mockMvc.perform(get(CONTROLLER_URL_ROOT_PREFIX + "/client/programs/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .queryParam("categoryId", cat.getId().toString()))
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.numberOfElements").value("1"));
+
 
 
     }

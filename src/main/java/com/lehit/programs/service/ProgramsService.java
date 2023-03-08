@@ -89,7 +89,7 @@ public class ProgramsService {
     }
 
     public Slice<ProgramWithAuthorProjection> findByCategory(UUID categoryId, Pageable pageable){
-        return programRepository.findByCategoryId(categoryId, pageable);
+        return programRepository.findByVisibilityStatusAndCategoryId(PUBLISHED, categoryId, pageable);
     }
 
 }
