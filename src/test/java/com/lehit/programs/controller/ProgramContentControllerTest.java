@@ -223,6 +223,37 @@ class ProgramContentControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(updatedDesc));
     }
 
+    @Test
+    void updateEmbeddedItemData() throws Exception {
+
+        var author = testDataTx.saveAuthor(TestDataGenerator.generateAuthor());
+
+        var program = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId()));
+        var task = testDataTx.saveTask(TestDataGenerator.generateTask(program.getId(), 1));
+
+
+        var ai = testDataTx.saveActionItem(TestDataGenerator.generateAI(ActionItemType.TEXT, 1, "", "", task.getId()));
+
+
+        var updatedInfoUrl = UUID.randomUUID().toString();
+        var updatedQuestion = UUID.randomUUID().toString();
+        var updatedDesc = UUID.randomUUID().toString();
+
+
+        this.mockMvc.perform(patch(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/items/{id}", author.getId(), ai.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialize(Map.of("informationItem.mediaFileUrl", updatedInfoUrl))))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.informationItem.mediaFileUrl").value(updatedInfoUrl));
+
+        this.mockMvc.perform(patch(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/items/{id}", author.getId(), ai.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialize(Map.of("questionItem.question", updatedQuestion, "description", updatedDesc))))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.questionItem.question").value(updatedQuestion))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.description").value(updatedDesc));
+    }
+
 
     protected String serialize(Object entity) throws JsonProcessingException {
         ObjectMapper o = new ObjectMapper();
