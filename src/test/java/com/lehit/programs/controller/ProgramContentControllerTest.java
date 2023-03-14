@@ -170,6 +170,21 @@ class ProgramContentControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void updateProgramCategory() throws Exception {
+        var author = testDataTx.saveAuthor(TestDataGenerator.generateAuthor());
+        var category = testDataTx.saveCategory(TestDataGenerator.generateCategory());
+        var category2 = testDataTx.saveCategory(TestDataGenerator.generateCategory());
+
+        var program = testDataTx.saveProgram(TestDataGenerator.generateProgram(author.getId(), category.getId()));
+
+
+        this.mockMvc.perform(patch(CONTROLLER_URL_ROOT_PREFIX + "/author/{authorId}/programs/{programId}", author.getId(), program.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(serialize(Map.of("categoryId", category2.getId()))))
+                .andExpect(status().isOk());
+    }
+
 
     @Test
     void deleteProgramByAuthor() throws Exception {

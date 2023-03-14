@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class BeanUtils {
@@ -23,11 +24,21 @@ public class BeanUtils {
     }
 
 
-    private<T> void updateBasicField(String fieldName, Object value, T objectInstance){
+    private<T> void updateBasicField(String fieldName, Object value, T objectInstance)  {
         Field field = org.springframework.util.ReflectionUtils.findField(objectInstance.getClass(), fieldName);
         Asserts.check(field != null, "Non existing field.");
-        field.setAccessible(true);
-        ReflectionUtils.setField(field, objectInstance, value);
+//        field.setAccessible(true);
+        var fieldType = field.getType();
+//        String does not get casted to UUID
+//        try {
+//            ReflectionUtils.setField(field, objectInstance, Class.forName(gg.getName()).cast(value));
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+        if(UUID.class.equals(fieldType))
+            value = UUID.fromString(value.toString());
+
+        ReflectionUtils.setField(field,objectInstance, value);
     }
 
     //    todo make universal(support more dept)
@@ -38,7 +49,7 @@ public class BeanUtils {
         Field field = org.springframework.util.ReflectionUtils.findField(nestedClass, nestedFields[1]);
 
         Asserts.check(field != null, "Non existing field.");
-        field.setAccessible(true);
+//        field.setAccessible(true);
         Object finObject =InformationItem.class.equals(nestedClass)? ((ActionItem)objectInstance).getInformationItem(): ((ActionItem)objectInstance).getQuestionItem();
 
         ReflectionUtils.setField(field,finObject, value);
