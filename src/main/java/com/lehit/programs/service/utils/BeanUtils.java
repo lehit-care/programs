@@ -28,14 +28,13 @@ public class BeanUtils {
         Field field = org.springframework.util.ReflectionUtils.findField(objectInstance.getClass(), fieldName);
         Asserts.check(field != null, "Non existing field.");
 //        field.setAccessible(true);
-        var fieldType = field.getType();
 //        String does not get casted to UUID
 //        try {
 //            ReflectionUtils.setField(field, objectInstance, Class.forName(gg.getName()).cast(value));
 //        } catch (ClassNotFoundException e) {
 //            e.printStackTrace();
 //        }
-        if(UUID.class.equals(fieldType))
+        if(UUID.class.equals(field.getType()))
             value = UUID.fromString(value.toString());
 
         ReflectionUtils.setField(field,objectInstance, value);

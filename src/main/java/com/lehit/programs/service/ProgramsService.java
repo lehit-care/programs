@@ -3,7 +3,7 @@ package com.lehit.programs.service;
 import com.lehit.programs.model.Program;
 import com.lehit.programs.model.enums.ContentVisibilityStatus;
 import com.lehit.programs.model.projection.ProgramWithAuthorProjection;
-import com.lehit.programs.model.projection.ProgramWithTasksProjection;
+import com.lehit.programs.model.projection.ProgramWithTasksAndCategoryProjection;
 import com.lehit.programs.repository.ProgramRepository;
 import com.lehit.programs.service.utils.BeanUtils;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,7 @@ public class ProgramsService {
         return programRepository.findById(programId);
     }
 
-    public Optional<ProgramWithTasksProjection> findProgramWithTasks(UUID programId){
+    public Optional<ProgramWithTasksAndCategoryProjection> findProgramWithTasks(UUID programId){
         return programRepository.selectProgramWithTasks(programId);
     }
 

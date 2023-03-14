@@ -4,7 +4,7 @@ import com.lehit.programs.model.ActionItem;
 import com.lehit.programs.model.Program;
 import com.lehit.programs.model.Task;
 import com.lehit.programs.model.payload.ProgramSequence;
-import com.lehit.programs.model.projection.ProgramWithTasksProjection;
+import com.lehit.programs.model.projection.ProgramWithTasksAndCategoryProjection;
 import com.lehit.programs.model.projection.TaskWithItemsProjection;
 import com.lehit.programs.service.ActionItemsService;
 import com.lehit.programs.service.ProgramsService;
@@ -69,7 +69,7 @@ public class ProgramContentController {
     }
 
     @GetMapping("/author/{authorId}/programs/{id}")
-    public Optional<ProgramWithTasksProjection> getProgramsByAuthor(@PathVariable UUID id){
+    public Optional<ProgramWithTasksAndCategoryProjection> getProgramsByAuthor(@PathVariable UUID id){
         return programsService.findProgramWithTasks(id);
     }
 

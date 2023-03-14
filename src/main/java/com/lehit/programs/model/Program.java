@@ -15,9 +15,10 @@ import java.util.UUID;
 
 
 @NamedEntityGraph(
-        name = "program-including-tasks",
+        name = "program-including-tasks-category",
         attributeNodes = {
-                @NamedAttributeNode(value = "tasks")
+                @NamedAttributeNode(value = "tasks"),
+                @NamedAttributeNode(value = "category")
         }
 )
 
